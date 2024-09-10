@@ -316,10 +316,7 @@ module CtrlUnit(
                                     push_select = 2'b00; //ALU
                                     ALUControl = 5'b10100;    
                                     read_pointer_shift_minusone = `log_read_window_size'd0;                                         
-                                end
-
-                                
-                                                                 
+                                end                             
                             endcase
                         end
                         default:begin
