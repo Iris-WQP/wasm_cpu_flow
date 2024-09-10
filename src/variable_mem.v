@@ -1,6 +1,6 @@
 //`timescale 1ns / 1ps
 `include "src/wasm_defines.vh"
-module VariableMemory #    //only one bram install all data
+module VariableMemory #     //only one bram install all data
              (   parameter ADDR_WIDTH = `log2_bram_depth_in,
                  parameter DATA_WIDTH = `bram_in_width,
                  parameter      DEPTH = `bram_depth_in)
