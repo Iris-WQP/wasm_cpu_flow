@@ -30,5 +30,6 @@ def distract_instrs(input_file, output_file):
 
 # main function
 if __name__ == '__main__':
-    distract_instrs('gemm_bin.txt', 'gemm_instr_bin.txt')
-    rearrange_file('gemm_instr_bin.txt', 'gemm_instr_bin_rearranged.txt')
+    distract_instrs('wasm_benchmark_file/gemm.txt', 'wasm_benchmark_file/temp.txt')
+    rearrange_file('wasm_benchmark_file/temp.txt', 'wasm_benchmark_file/gemm_hex.txt')
+    

@@ -4,7 +4,7 @@ module ALU(
 input [`st_width-1:0] A,
 input [`st_width-1:0] B,
 input [`st_width-1:0] C,
-input [3:0] ALUControl,
+input [4:0] ALUControl,
 output reg [31:0] ALUResult
 );
 
@@ -20,21 +20,33 @@ wire [31:0] gt_s = {31'd0, ((B[31]^A[31])? A[31]:gt_u)};
 always@* begin
 {C_out,sum} = (ALUControl[0])? (B+(~A)+1'b1):(A+B);
 case(ALUControl)
-    4'b0000, 4'b0001: ALUResult = sum;
-    4'b0010: ALUResult = A&B;
-    4'b0011: ALUResult = A|B;
-    4'b0100: ALUResult = eqz[0]? B:C;
-    4'b0101: ALUResult = eqz;
-    4'b0110: ALUResult = eq;
-    4'b0111: ALUResult = lt_u;//unsigned lt
-    4'b1000: ALUResult = gt_u;//unsigned gt
-    4'b1001: ALUResult = lt_u|eq;//unsigned le
-    4'b1010: ALUResult = gt_u|eq;//unsigned ge
-    4'b1011: ALUResult = lt_s;//signed lt
-    4'b1100: ALUResult = gt_s;//signed gt
-    4'b1101: ALUResult = lt_s|eq;//signed le
-    4'b1110: ALUResult = gt_s|eq;//signed ge
-    4'b1111: ALUResult = ne;
+    5'b00000, 5'b0001: ALUResult = sum;
+    5'b00010: ALUResult = A&B;
+    5'b00011: ALUResult = A|B;
+    5'b00100: ALUResult = eqz[0]? B:C;
+    5'b00101: ALUResult = eqz;
+    5'b00110: ALUResult = eq;
+    5'b00111: ALUResult = lt_u;//unsigned lt
+    5'b01000: ALUResult = gt_u;//unsigned gt
+    5'b01001: ALUResult = lt_u|eq;//unsigned le
+    5'b01010: ALUResult = gt_u|eq;//unsigned ge
+    5'b01011: ALUResult = lt_s;//signed lt
+    5'b01100: ALUResult = gt_s;//signed gt
+    5'b01101: ALUResult = lt_s|eq;//signed le
+    5'b01110: ALUResult = gt_s|eq;//signed ge
+    5'b01111: ALUResult = ne;
+    // B shift left A bits 0x74
+    5'b10000: ALUResult = B << A;
+    // signed B shift right A bits 0x75
+    5'b10001: ALUResult = B >>> A;
+    // unsigned B shift right A bits 0x76
+    5'b10010: ALUResult = B >> A;
+    // i32 B rotate left A bits 0x77
+    5'b10011: ALUResult = B << A | B >>> (32 - A);
+    // i32 B rotate right A bits 0x78
+    5'b10100: ALUResult = B >>> A | B << (32 - A);
+
+
     default: ALUResult = 32'd0;
 endcase
 end

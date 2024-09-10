@@ -34,7 +34,7 @@ module WASM_TOP(
     wire shift_vld;
     wire [1:0] pop_num;
     wire [1:0] push_select;
-    wire [3:0] ALUControl;
+    wire [4:0] ALUControl;
     wire store_en;
     wire load_en;
     wire local_set;
