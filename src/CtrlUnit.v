@@ -58,9 +58,15 @@ module CtrlUnit(
     
     //code section vector content
     reg [31:0] vector_cnt;
-    wire vector_content_finish;
-    
-    assign vector_content_finish = vector_cnt==(vector_num-1);
+
+    // type section decode
+    reg type_decode; //0~decode parameter; 1~decode return
+    reg [7:0] para_num_reg [7:0];   //parameter number of the function
+    reg [7:0] retu_num_reg [7:0];   //return number of the function
+
+    //debug
+    wire[7:0] para_num_reg0 = para_num_reg[0];
+    wire[7:0] retu_num_reg0 = retu_num_reg[0];
     
     assign load_en = (Instr[7:0]==8'h28)&(section_type==8'h0a)&(instr_pointer_state==vector_content);
     assign store_en = (Instr[7:0]==8'h36)&(section_type==8'h0a)&(instr_pointer_state==vector_content);
@@ -94,13 +100,13 @@ module CtrlUnit(
             end
             vector_head: begin
                 case (section_type)
-                    8'h0a:begin
+                    8'h0a, 8'h01:begin
                         read_pointer_shift_minusone = {`shift_fill_zero'b0, LEB128_byte_cnt} - 'd1;
                         pop_num = 2'd0;
                         push_num = 1'b0;
                         push_select = 2'bZZ;
                         ALUControl = 5'bZZZZZ;                          
-                    end
+                    end                   
                     default:begin
                         read_pointer_shift_minusone = section_length - 32'd1;
                         pop_num = 2'd0;
@@ -112,6 +118,22 @@ module CtrlUnit(
             end
             vector_content: begin
                     case (section_type)
+                    8'h01:begin
+                        if(type_decode) begin
+                            read_pointer_shift_minusone = Instr[7:0] + 'd0;
+                            pop_num = 2'd0;
+                            push_num = 1'b0;
+                            push_select = 2'bZZ;                            
+                            ALUControl = 5'bZZZZZ;                             
+                        end
+                        else begin
+                            read_pointer_shift_minusone = Instr[15:8]+ 'd1;
+                            pop_num = 2'd0;
+                            push_num = 1'b0;
+                            push_select = 2'bZZ;                            
+                            ALUControl = 5'bZZZZZ;                             
+                        end                        
+                    end                     
                         8'h0a:begin //Code section
                             case (Instr[7:0]) 
                                 8'h01:begin //nop
@@ -327,6 +349,7 @@ module CtrlUnit(
         endcase
     end
 
+
     always@(posedge clk or negedge rst_n) begin
         if(~rst_n) begin
             instr_pointer_state <= module_head;
@@ -334,6 +357,8 @@ module CtrlUnit(
             shift_vld <= 1'd1;
             section_length <= 32'd0;
             section_type <= 8'd0;
+            type_decode <= 1'b0;
+            vector_cnt <= 'd0;
         end else begin
             case(instr_pointer_state)
                 module_head: begin
@@ -347,19 +372,36 @@ module CtrlUnit(
                 end
                 vector_head: begin
                     vector_num <= LEB128_decode;
-                    if(section_type==8'h0a) instr_pointer_state <= vector_content;
+                    if(section_type==8'h0a|section_type==8'h01) instr_pointer_state <= vector_content;
+                    // if(section_type==8'h0a) instr_pointer_state <= vector_content;
+
                     else instr_pointer_state <= section_head;
                 end
                 vector_content: begin
                     case (section_type)
                         8'h0a:begin //; section "Code" (10)
-                            if(vector_content_finish) begin
+                            if((vector_cnt==(vector_num-1))&(Instr[7:0]==8'h0b)) begin
                                 vector_cnt <= 'd0;
                                 instr_pointer_state <= section_head;
                             end
                             else begin 
                                 vector_cnt <= vector_cnt + 'd1;
-                                instr_pointer_state <= vector_content;
+                                // instr_pointer_state <= vector_content;
+                            end
+                        end
+                        8'h01:begin //; section "Type" (1)
+                            if(type_decode) begin
+                                type_decode <= 1'b0;
+                                retu_num_reg[vector_cnt] <= Instr[7:0];
+                                if(vector_cnt==(vector_num-1)) begin
+                                    vector_cnt <= 'd0;
+                                    instr_pointer_state <= section_head;
+                                end
+                                else vector_cnt <= vector_cnt + 'd1;
+                            end
+                            else begin
+                                type_decode <= 1'b1;
+                                para_num_reg[vector_cnt] <= Instr[15:8];                                    
                             end
                         end
                         default:begin
