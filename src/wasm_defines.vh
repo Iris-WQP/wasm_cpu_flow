@@ -16,8 +16,8 @@
 //instruction memory
 `define instr_bram_width 8
 
-`define instr_bram_depth 1024
-`define instr_log2_bram_depth 10
+`define instr_bram_depth 64
+`define instr_log2_bram_depth 6
 
 `define instr_read_width 72   //8 bit operand + 64bit opcode, window size
 `define read_window_size (`instr_read_width/`instr_bram_width) //9

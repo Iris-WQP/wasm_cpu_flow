@@ -6,7 +6,7 @@ generate_instructions:
 	python3 arrange_instr_format.py
 
 verilator:
-	verilator -cc -trace --timing TB_WASM_TOP.v -exe sim_mian.cpp
+	verilator -cc -trace --timing TB_WASM_TOP.v -exe sim_main.cpp
 
 check_result:
 	python CheckResult.py

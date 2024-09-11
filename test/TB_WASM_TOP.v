@@ -47,6 +47,11 @@ module TB_WASM_TOP;
         #2 rst_n = 1;
     end   
 
+    initial begin
+        $display("Loading test data");
+        $readmemh("test/wasm_test0_hex.txt", u_wasm_top.u_instr_mem_ctrl.bram);
+    end
+
     //count clk from reset to instr_finish==1
     always @(posedge clk or negedge rst_n) begin
         if (~rst_n) begin

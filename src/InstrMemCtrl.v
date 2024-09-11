@@ -39,7 +39,7 @@ module InstrMemCtrl #
     reg working;
     wire forward;
 //    (*ram_style="block"*)
-    reg [DATA_WIDTH-1:0] bram [DEPTH-1:0];
+    reg [DATA_WIDTH-1:0] bram [0:DEPTH-1];
     reg [ADDR_WIDTH-1:0] read_pointer; 
     reg [ADDR_WIDTH-1:0] write_pointer;
     assign instr_finish = (read_pointer == write_pointer);
@@ -100,62 +100,62 @@ module InstrMemCtrl #
         end
     endgenerate      
 
-always@(posedge clk or negedge rst_n) begin
-    if(~rst_n) begin
-        bram[0]  <= 8'h00;
-        bram[1]  <= 8'h61;
-        bram[2]  <= 8'h73;
-        bram[3]  <= 8'h6d;                           
-        bram[4]  <= 8'h01;
-        bram[5]  <= 8'h00;
-        bram[6]  <= 8'h00;
-        bram[7]  <= 8'h00;                           
-        bram[8]  <= 8'h01;                                  
-        bram[9]  <= 8'h07;                                  
-        bram[10] <= 8'h01;                                  
-        bram[11] <= 8'h60;                                  
-        bram[12] <= 8'h02;                                  
-        bram[13] <= 8'h7f;                                  
-        bram[14] <= 8'h7f;                                  
-        bram[15] <= 8'h01;                                  
-        bram[16] <= 8'h7f;                                  
-        bram[17] <= 8'h03;                                  
-        bram[18] <= 8'h02;                                  
-        bram[19] <= 8'h01;                                  
-        bram[20] <= 8'h00;                               
-        bram[21] <= 8'h0a;                                  
-        bram[22] <= 8'h11;                                  
-        bram[23] <= 8'h01;                                  
-        bram[24] <= 8'h0f;                                  
-        bram[25] <= 8'h00;                                  
-        bram[26] <= 8'h41;                                  
-        bram[27] <= 8'hdd;
-        bram[28] <= 8'h01;                                
-        bram[29] <= 8'h20;                                  
-        bram[30] <= 8'h01;                                  
-        bram[31] <= 8'h6b;                                  
-        bram[32] <= 8'h20;                                  
-        bram[33] <= 8'h00;                                  
-        bram[34] <= 8'h4f;                                  
-        bram[35] <= 8'h45;                                  
-        bram[36] <= 8'h41;                                  
-        bram[37] <= 8'h04;                                  
-        bram[38] <= 8'h72;                                  
-        bram[39] <= 8'h0b;                                  
-        bram[40] <= 8'h00;                                  
-        bram[41] <= 8'h0a;                                  
-        bram[42] <= 8'h04;                                  
-        bram[43] <= 8'h6e;
-        bram[44] <= 8'h61;
-        bram[45] <= 8'h6d;
-        bram[46] <= 8'h65;                       
-        bram[47] <= 8'h02;                                  
-        bram[48] <= 8'h03;                                  
-        bram[49] <= 8'h01;                                  
-        bram[50] <= 8'h00;                                  
-        bram[51] <= 8'h00;       
-    end
-end
+// always@(posedge clk or negedge rst_n) begin
+//     if(~rst_n) begin
+//         bram[0]  <= 8'h00;
+//         bram[1]  <= 8'h61;
+//         bram[2]  <= 8'h73;
+//         bram[3]  <= 8'h6d;                           
+//         bram[4]  <= 8'h01;
+//         bram[5]  <= 8'h00;
+//         bram[6]  <= 8'h00;
+//         bram[7]  <= 8'h00;                           
+//         bram[8]  <= 8'h01;                                  
+//         bram[9]  <= 8'h07;                                  
+//         bram[10] <= 8'h01;                                  
+//         bram[11] <= 8'h60;                                  
+//         bram[12] <= 8'h02;                                  
+//         bram[13] <= 8'h7f;                                  
+//         bram[14] <= 8'h7f;                                  
+//         bram[15] <= 8'h01;                                  
+//         bram[16] <= 8'h7f;                                  
+//         bram[17] <= 8'h03;                                  
+//         bram[18] <= 8'h02;                                  
+//         bram[19] <= 8'h01;                                  
+//         bram[20] <= 8'h00;                               
+//         bram[21] <= 8'h0a;                                  
+//         bram[22] <= 8'h11;                                  
+//         bram[23] <= 8'h01;                                  
+//         bram[24] <= 8'h0f;                                  
+//         bram[25] <= 8'h00;                                  
+//         bram[26] <= 8'h41;                                  
+//         bram[27] <= 8'hdd;
+//         bram[28] <= 8'h01;                                
+//         bram[29] <= 8'h20;                                  
+//         bram[30] <= 8'h01;                                  
+//         bram[31] <= 8'h6b;                                  
+//         bram[32] <= 8'h20;                                  
+//         bram[33] <= 8'h00;                                  
+//         bram[34] <= 8'h4f;                                  
+//         bram[35] <= 8'h45;                                  
+//         bram[36] <= 8'h41;                                  
+//         bram[37] <= 8'h04;                                  
+//         bram[38] <= 8'h72;                                  
+//         bram[39] <= 8'h0b;                                  
+//         bram[40] <= 8'h00;                                  
+//         bram[41] <= 8'h0a;                                  
+//         bram[42] <= 8'h04;                                  
+//         bram[43] <= 8'h6e;
+//         bram[44] <= 8'h61;
+//         bram[45] <= 8'h6d;
+//         bram[46] <= 8'h65;                       
+//         bram[47] <= 8'h02;                                  
+//         bram[48] <= 8'h03;                                  
+//         bram[49] <= 8'h01;                                  
+//         bram[50] <= 8'h00;                                  
+//         bram[51] <= 8'h00;       
+//     end
+// end
 
 
 endmodule

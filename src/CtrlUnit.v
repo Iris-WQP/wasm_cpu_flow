@@ -67,11 +67,13 @@ module CtrlUnit(
     //此处可以加tag
     reg [7:0] para_num_reg [7:0];   //parameter number of the function
     reg [7:0] retu_num_reg [7:0];   //return number of the function
+    reg [7:0] function_num_reg ;     //function number
     reg [(`instr_read_width-1):0] function_type_list [3:0]; //function type list
     reg [(`instr_log2_bram_depth-1):0] function_addr_list [7:0];  //function pre reading
     //debug
     wire[7:0] para_num_reg0 = para_num_reg[0];
     wire[7:0] retu_num_reg0 = retu_num_reg[0];
+    wire[(`instr_read_width-1):0] function_type_list0 = function_type_list[0];
     
     assign load_en = (Instr[7:0]==8'h28)&(section_type==8'h0a)&(instr_pointer_state==vector_content);
     assign store_en = (Instr[7:0]==8'h36)&(section_type==8'h0a)&(instr_pointer_state==vector_content);
@@ -105,8 +107,8 @@ module CtrlUnit(
             end
             vector_head: begin
                 case (section_type)
-                    // 8'h0a, 8'h01, 8'h03:begin
-                    8'h0a, 8'h01:begin
+                    8'h0a, 8'h01, 8'h03:begin
+                    // 8'h0a, 8'h01:begin
                         read_pointer_shift_minusone = {`shift_fill_zero'b0, LEB128_byte_cnt} - 'd1;
                         pop_num = 2'd0;
                         push_num = 1'b0;
@@ -355,7 +357,7 @@ module CtrlUnit(
         endcase
     end
 
-
+    reg [3:0] function_store_addr;
     always@(posedge clk or negedge rst_n) begin
         if(~rst_n) begin
             instr_pointer_state <= module_head;
@@ -366,6 +368,7 @@ module CtrlUnit(
             type_decode <= 1'b0;
             vector_cnt <= 'd0;
             instr_finish <= 1'b0;
+            function_store_addr <= 4'd0;
         end else begin
             case(instr_pointer_state)
                 module_head: begin
@@ -379,10 +382,11 @@ module CtrlUnit(
                 end
                 vector_head: begin
                     vector_num <= LEB128_decode;
-                    if(section_type==8'h0a|section_type==8'h01) instr_pointer_state <= vector_content;
-                    // if(section_type==8'h0a) instr_pointer_state <= vector_content;
 
+                    if(section_type==8'h0a|section_type==8'h01|section_type==8'h03) instr_pointer_state <= vector_content;
                     else instr_pointer_state <= section_head;
+
+                    if (section_type==8'h03) function_num_reg <= Instr[7:0];
                 end
                 vector_content: begin
                     case (section_type)
@@ -413,17 +417,18 @@ module CtrlUnit(
                                 para_num_reg[vector_cnt] <= Instr[15:8];                                    
                             end
                         end
-                        // 8'h03:begin //; section "Function" (3)
-                        //     if(~((vector_cnt+`read_window_size)<(vector_num-1))) begin
-                        //         function_type_list[(`instr_read_width-1)]<= Instr[(vector_num-vector_cnt-1):0];
-                        //         vector_cnt <= 'd0;
-                        //         instr_pointer_state <= section_head;
-                        //     end
-                        //     else begin
-                        //         vector_cnt <= vector_cnt + `read_window_size;
-                        //         function_type_list[(vector_cnt+`instr_read_width-1):vector_cnt]<= Instr;
-                        //     end
-                        // end
+                        8'h03:begin //; section "Function" (3)
+                            function_type_list[function_store_addr] <= Instr;
+                            if(~((vector_cnt+`read_window_size)<(vector_num-1))) begin
+                                vector_cnt <= 'd0;
+                                instr_pointer_state <= section_head;
+                                function_store_addr <= 4'd0;
+                            end
+                            else begin
+                                vector_cnt <= vector_cnt + `read_window_size;
+                                function_store_addr <= function_store_addr + 'd1;
+                            end
+                        end
                         default:begin
                             instr_pointer_state <= section_head;
                         end
