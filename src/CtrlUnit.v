@@ -30,7 +30,9 @@ module CtrlUnit(
         output local_get,
         
         //instants
-        output [31:0] constant
+        output [31:0] constant,
+
+        output reg instr_finish
     );
 
     reg continue;
@@ -39,6 +41,7 @@ module CtrlUnit(
                 section_head = 2'b01,
                 vector_head = 2'b10,
                 vector_content = 2'b11;
+
     //variables
     reg [`bram_in_width-1:0]global_variables[`bram_depth_in-1:0];
     reg [`instr_bram_width-1:0] global_var_type [`bram_depth_in-1:0];
@@ -61,9 +64,11 @@ module CtrlUnit(
 
     // type section decode
     reg type_decode; //0~decode parameter; 1~decode return
+    //此处可以加tag
     reg [7:0] para_num_reg [7:0];   //parameter number of the function
     reg [7:0] retu_num_reg [7:0];   //return number of the function
-
+    reg [(`instr_read_width-1):0] function_type_list [3:0]; //function type list
+    reg [(`instr_log2_bram_depth-1):0] function_addr_list [7:0];  //function pre reading
     //debug
     wire[7:0] para_num_reg0 = para_num_reg[0];
     wire[7:0] retu_num_reg0 = retu_num_reg[0];
@@ -100,6 +105,7 @@ module CtrlUnit(
             end
             vector_head: begin
                 case (section_type)
+                    // 8'h0a, 8'h01, 8'h03:begin
                     8'h0a, 8'h01:begin
                         read_pointer_shift_minusone = {`shift_fill_zero'b0, LEB128_byte_cnt} - 'd1;
                         pop_num = 2'd0;
@@ -359,6 +365,7 @@ module CtrlUnit(
             section_type <= 8'd0;
             type_decode <= 1'b0;
             vector_cnt <= 'd0;
+            instr_finish <= 1'b0;
         end else begin
             case(instr_pointer_state)
                 module_head: begin
@@ -380,9 +387,11 @@ module CtrlUnit(
                 vector_content: begin
                     case (section_type)
                         8'h0a:begin //; section "Code" (10)
-                            if((vector_cnt==(vector_num-1))&(Instr[7:0]==8'h0b)) begin
+                            // if((vector_cnt==(vector_num-1))&(Instr[7:0]==8'h0b)) begin
+                            if(Instr[7:0] == 8'h0b) begin
                                 vector_cnt <= 'd0;
                                 instr_pointer_state <= section_head;
+                                instr_finish <= 1'b1;
                             end
                             else begin 
                                 vector_cnt <= vector_cnt + 'd1;
@@ -404,6 +413,17 @@ module CtrlUnit(
                                 para_num_reg[vector_cnt] <= Instr[15:8];                                    
                             end
                         end
+                        // 8'h03:begin //; section "Function" (3)
+                        //     if(~((vector_cnt+`read_window_size)<(vector_num-1))) begin
+                        //         function_type_list[(`instr_read_width-1)]<= Instr[(vector_num-vector_cnt-1):0];
+                        //         vector_cnt <= 'd0;
+                        //         instr_pointer_state <= section_head;
+                        //     end
+                        //     else begin
+                        //         vector_cnt <= vector_cnt + `read_window_size;
+                        //         function_type_list[(vector_cnt+`instr_read_width-1):vector_cnt]<= Instr;
+                        //     end
+                        // end
                         default:begin
                             instr_pointer_state <= section_head;
                         end

@@ -38,6 +38,7 @@ module TB_WASM_TOP;
         // .ALUResult(ALUResult),
         // .stack_empty(stack_empty)
     );
+    reg [31:0] clk_cnt;
 
     initial begin
         clk = 0;
@@ -45,6 +46,18 @@ module TB_WASM_TOP;
         #2 rst_n = 0;
         #2 rst_n = 1;
     end   
+
+    //count clk from reset to instr_finish==1
+    always @(posedge clk or negedge rst_n) begin
+        if (~rst_n) begin
+            clk_cnt <= 0;
+        end else if (instr_finish == 1) begin
+            $display("clk_cnt = %d", clk_cnt);
+            $finish;
+        end else begin
+            clk_cnt <= clk_cnt + 1;
+        end
+    end
     
     initial begin 
         #1000

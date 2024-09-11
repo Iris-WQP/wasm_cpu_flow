@@ -77,7 +77,8 @@ module WASM_TOP(
         .load_en(load_en),
         .local_set(local_set),
         .local_get(local_get),
-        .constant(constant)
+        .constant(constant),
+        .instr_finish(o_instr_finish)
     );
 
 //depends on instr write method, useless for now.
@@ -103,7 +104,8 @@ InstrMemCtrl #
                 .we(wr_req_vld),     //wr_req_vld
                 .write_pointer_shift_minusone(write_pointer_shift_minusone),
                 .wr_data(wr_data),
-                .instr_finish(o_instr_finish)
+                .instr_finish()
+                // .instr_finish(o_instr_finish)
         // //debug
         //         ,
         //         .read_pointer(read_pointer),
