@@ -1,4 +1,4 @@
-`timescale 1ns / 1ps
+// `timescale 1ns / 1ps
 
 `include "src/CtrlUnit.v"
 `include "src/InstrMemCtrl.v"
@@ -6,9 +6,10 @@
 `include "src/ALU.v"
 `include "src/Stack.v"
 `include "src/local_mem.v"
-`include "src/VariableMemory.v"
+// `include "src/VariableMemory.v"
 
 module WASM_TOP(
+    
         input i_clk,
         input i_rst_n,
 
@@ -30,7 +31,7 @@ module WASM_TOP(
     wire stack_empty;
     wire [`instr_read_width-1:0] Instr;
     wire Instr_vld;
-    wire [`log_read_window_size:0] read_pointer_shift_minusone;
+    wire [`log_read_window_size-1:0] read_pointer_shift_minusone;
     wire shift_vld;
     wire [1:0] pop_num;
     wire [1:0] push_select;
@@ -132,7 +133,7 @@ InstrMemCtrl #
         .push_num(push_num),
         .push_data(push_data),
         .pop_num(pop_num),
-        .stack_full(stack_full),
+        .stack_full(o_stack_full),
         .stack_empty(stack_empty),
         .pop_window(pop_window)
     );

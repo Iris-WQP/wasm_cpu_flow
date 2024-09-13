@@ -5,6 +5,7 @@
 //stack
 `define st_width `WIDTH         //here!!!!!!!
 `define st_depth 16
+`define st_depth_mius_1 15
 `define st_log2_depth 4
 `define imem_width 8
 
@@ -27,5 +28,5 @@
 `define write_window_size (`instr_write_width/`instr_bram_width) //32
 `define log_write_window_size 5
 
-`define shift_fill_zero 2//(`log_read_window_size+1-3)
+`define shift_fill_zero 1//(`log_read_window_size-3)
 `define pop_num_max 3

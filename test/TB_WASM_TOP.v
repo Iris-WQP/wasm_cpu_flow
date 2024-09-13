@@ -1,13 +1,12 @@
-`timescale 1ns / 1ps
+// `timescale 1ns / 1ps
 `include "src/wasm_defines.vh"
 `include "src/WASM_TOP.v"
+`define T 2 
 module TB_WASM_TOP;
 
-    // Parameters
-    parameter CLK_period = 2; // 50 MHz
-
     // Signals
-    reg clk;
+    reg clk=0;
+    always #(`T/2) clk = ~clk; // Generate clock signal    
     reg rst_n;
     wire INSTR_ERROR;
     wire instr_finish;
@@ -19,9 +18,15 @@ module TB_WASM_TOP;
     //generate .vcd
     initial
     begin
-        $dumpfile("wave.vcd");
+        $dumpfile("wave.vcd"); 
         $dumpvars(0);
     end
+
+    initial begin
+        rst_n = 1;
+        #2 rst_n = 0;
+        #2 rst_n = 1;
+    end   
 
 
     // Instantiate the Unit Under Test (UUT)
@@ -40,19 +45,13 @@ module TB_WASM_TOP;
     );
     reg [31:0] clk_cnt;
 
-    initial begin
-        clk = 0;
-        rst_n = 1;
-        #2 rst_n = 0;
-        #2 rst_n = 1;
-    end   
 
     initial begin
         $display("Loading test data");
-        $readmemh("test/wasm_test0_hex.txt", u_wasm_top.u_instr_mem_ctrl.bram);
+        $readmemh("wasm_test0_hex.txt", u_wasm_top.u_instr_mem_ctrl.bram);
     end
 
-    //count clk from reset to instr_finish==1
+//    count clk from reset to instr_finish==1
     always @(posedge clk or negedge rst_n) begin
         if (~rst_n) begin
             clk_cnt <= 0;
@@ -69,6 +68,5 @@ module TB_WASM_TOP;
         $finish;
     end
 
-    always #(CLK_period/2) clk = ~clk; // Generate clock signal
 
 endmodule

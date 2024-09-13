@@ -1,4 +1,4 @@
-`timescale 1ns / 1ps
+// `timescale 1ns / 1ps
 `include "src/wasm_defines.vh"
 
 module InstrMemCtrl #  
@@ -11,7 +11,7 @@ module InstrMemCtrl #
                 input  shift_vld,
                 
                 input re,
-                input [`log_read_window_size:0] read_pointer_shift_minusone,
+                input [`log_read_window_size-1:0] read_pointer_shift_minusone,
                 output reg [`instr_read_width-1:0] rd_data,
                 output reg rd_data_vld,
                 //write port
@@ -67,7 +67,7 @@ module InstrMemCtrl #
             read_pointer <= 0;
         end else begin
             if(shift_vld&forward)begin
-                    read_pointer <= read_pointer + read_pointer_shift_minusone + 1;
+                    read_pointer <= read_pointer + {2'b0, read_pointer_shift_minusone} + 'b1;
             end
         end
     end

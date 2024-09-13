@@ -1,4 +1,4 @@
-`timescale 1ns / 1ps
+// `timescale 1ns / 1ps
 `include "src/wasm_defines.vh"
 module ALU(
 input [`st_width-1:0] A,

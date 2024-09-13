@@ -1,4 +1,4 @@
-`timescale 1ns / 1ps
+// `timescale 1ns / 1ps
 `include "src/wasm_defines.vh"
 module LineMemory #    //only one bram install all data
              (   parameter ADDR_WIDTH = `log2_bram_depth_in,

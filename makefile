@@ -1,12 +1,17 @@
-default:
-	iverilog -o wave ./test/TB_WASM_TOP.v
+test_instr = wasm_test0_hex.txt
+tb_name = TB_WASM_TOP.v
+
+verilator:
+	verilator -cc -trace --timing ./test/$(tb_name) -exe ./sim_main.cpp -Wno-WIDTHTRUNC -Wno-WIDTHEXPAND
+	cp ./wasm_benchmark_file/$(test_instr) ./obj_dir/
+
+iverilog:
+	cp ./wasm_benchmark_file/$(test_instr) ./test/
+	iverilog -o wave ./test/$(tb_name)
 	vvp -n wave -lxt2
 
 generate_instructions:
 	python3 arrange_instr_format.py
-
-verilator:
-	verilator -cc -trace --timing TB_WASM_TOP.v -exe sim_main.cpp
 
 check_result:
 	python CheckResult.py

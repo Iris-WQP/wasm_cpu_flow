@@ -1,4 +1,4 @@
-`timescale 1ns / 1ps
+// `timescale 1ns / 1ps
 `include "src/wasm_defines.vh"
 `include "src/LEB128_uint32_decode.v"
 
@@ -8,7 +8,7 @@ module CtrlUnit(
         
         input [`instr_read_width-1:0] Instr,
         input Instr_vld,
-        output reg [`log_read_window_size:0] read_pointer_shift_minusone,
+        output reg [`log_read_window_size-1:0] read_pointer_shift_minusone,
         output reg shift_vld,       //temporary useless
         output reg INSTR_ERROR,
         
@@ -35,7 +35,6 @@ module CtrlUnit(
         output reg instr_finish
     );
 
-    reg continue;
     reg [1:0] instr_pointer_state;
     parameter   module_head = 2'b00,
                 section_head = 2'b01,
@@ -68,8 +67,8 @@ module CtrlUnit(
     reg [7:0] para_num_reg [7:0];   //parameter number of the function
     reg [7:0] retu_num_reg [7:0];   //return number of the function
     reg [7:0] function_num_reg ;     //function number
-    reg [(`instr_read_width-1):0] function_type_list [3:0]; //function type list
-    reg [(`instr_log2_bram_depth-1):0] function_addr_list [7:0];  //function pre reading
+    reg [(`instr_read_width-1):0] function_type_list [15:0]; //function type list
+    reg [(`instr_log2_bram_depth-1):0] function_addr_list [31:0];  //function pre reading
     //debug
     wire[7:0] para_num_reg0 = para_num_reg[0];
     wire[7:0] retu_num_reg0 = retu_num_reg[0];
@@ -116,7 +115,8 @@ module CtrlUnit(
                         ALUControl = 5'bZZZZZ;                          
                     end                   
                     default:begin
-                        read_pointer_shift_minusone = section_length - 32'd1;
+                        read_pointer_shift_minusone = {section_length - 32'd1};
+                        //Warning-WIDTHTRUNC: Operator ASSIGN expects 4 bits on the Assign RHS, but Assign RHS's SUB generates 32 bits.
                         pop_num = 2'd0;
                         push_num = 1'b0;
                         push_select = 2'bZZ;                        
@@ -128,14 +128,15 @@ module CtrlUnit(
                     case (section_type)
                     8'h01:begin
                         if(type_decode) begin
-                            read_pointer_shift_minusone = Instr[7:0] + 'd0;
+                            read_pointer_shift_minusone = Instr[(`log_read_window_size-1):0] + 'd0;
                             pop_num = 2'd0;
                             push_num = 1'b0;
                             push_select = 2'bZZ;                            
                             ALUControl = 5'bZZZZZ;                             
                         end
                         else begin
-                            read_pointer_shift_minusone = Instr[15:8]+ 'd1;
+                            read_pointer_shift_minusone = Instr[(`log_read_window_size+7):8]+ 'd1;
+                            // read_pointer_shift_minusone = Instr[15:8]+ 'd1;
                             pop_num = 2'd0;
                             push_num = 1'b0;
                             push_select = 2'bZZ;                            
@@ -346,11 +347,18 @@ module CtrlUnit(
                                     push_select = 2'b00; //ALU
                                     ALUControl = 5'b10100;    
                                     read_pointer_shift_minusone = `log_read_window_size'd0;                                         
-                                end                             
+                                end  
+                                default:begin
+                                    read_pointer_shift_minusone = `log_read_window_size'd0;  
+                                    pop_num = 2'd0;
+                                    push_num = 1'b0;
+                                    push_select = 2'bZZ;
+                                    ALUControl = 5'bZZZZZ;
+                                end                           
                             endcase
                         end
                         default:begin
-                            read_pointer_shift_minusone = 32'd0;
+                            read_pointer_shift_minusone = `log_read_window_size'b0;
                         end
                     endcase
             end

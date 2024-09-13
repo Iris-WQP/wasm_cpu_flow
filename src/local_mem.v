@@ -1,4 +1,4 @@
-`timescale 1ns / 1ps
+// `timescale 1ns / 1ps
 `include "src/wasm_defines.vh"
 module local_mem #    //only one bram install all data
              (   parameter ADDR_WIDTH = `log2_bram_depth_in,
@@ -8,7 +8,7 @@ module local_mem #    //only one bram install all data
                 input clk,
                 //read port
                 // input [ADDR_WIDTH-1:0] addr,
-                input [31:0] addr,
+                input [31:0] addr, 
                 output reg [DATA_WIDTH-1:0] rd_data,
                 //write port
                 input we,     //wr_req_vld
@@ -19,8 +19,8 @@ module local_mem #    //only one bram install all data
 //    assign bram_sample_0 = bram[0];
 //    assign bram_sample_1 = bram[1];
     initial begin
-            bram[0] <= 32'd10;
-            bram[1] <= 32'd6; 
+            bram[0] = 32'd10;
+            bram[1] = 32'd6; 
     end
 
     //read

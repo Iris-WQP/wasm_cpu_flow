@@ -1,4 +1,4 @@
-`timescale 1ns / 1ps
+// `timescale 1ns / 1ps
 
 
 module LEB128_uint32_decode(
@@ -8,12 +8,13 @@ module LEB128_uint32_decode(
     );
     
     wire en1, en2, en3, en4;
-    wire [6:0] dt [4:0]; //data from LEB128_in
+    wire [6:0] dt [3:0]; //data from LEB128_in
+    wire [3:0] dt_4;
     assign dt[0] = LEB128_in [6:0];
     assign dt[1] = LEB128_in [14:8];
     assign dt[2] = LEB128_in [22:16];
     assign dt[3] = LEB128_in [30:24];
-    assign dt[4] = LEB128_in [35:32];
+    assign dt_4 = LEB128_in [35:32];
 
     assign en1 = LEB128_in[7];
     assign en2 = LEB128_in[15];
@@ -37,7 +38,7 @@ module LEB128_uint32_decode(
                         uint32_out = {4'b0, dt[3], dt[2], dt[1], dt[0]};
                         byte_cnt = 4;
                     end else begin
-                        uint32_out = {dt[4], dt[3], dt[2], dt[1], dt[0]};
+                        uint32_out = {dt_4, dt[3], dt[2], dt[1], dt[0]};
                         byte_cnt = 5;
                     end
                 end
