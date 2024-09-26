@@ -11,7 +11,7 @@ module InstrMemCtrl #
                 input  shift_vld,
                 
                 input re,
-                input [`log_read_window_size-1:0] read_pointer_shift_minusone,
+                input [7:0] read_pointer_shift_minusone,
                 output reg [`instr_read_width-1:0] rd_data,
                 output reg rd_data_vld,
                 //write port
@@ -97,7 +97,7 @@ module InstrMemCtrl #
         begin: tp_rd
             always @(*) begin
                 if(re)begin
-                    rd_data[i*`instr_bram_width+:`instr_bram_width] = bram[read_pointer+i];    
+                    rd_data[i*`instr_bram_width+:`instr_bram_width] = bram[read_pointer_out+i];    
                     rd_data_vld = 1'd1;          
                 end else begin
                     rd_data = 'd0;

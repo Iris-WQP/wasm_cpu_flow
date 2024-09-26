@@ -17,7 +17,7 @@ VL_ATTR_COLD void VTB_WASM_TOP___024root___eval_initial__TOP(VTB_WASM_TOP___024r
     vlSymsp->_vm_contextp__->dumpfile(std::string{"wave.vcd"});
     vlSymsp->_traceDumpOpen();
     VL_WRITEF_NX("Loading test data\n",0);
-    VL_READMEM_N(true, 8, 128, 0, VL_CVT_PACK_STR_NW(8, VTB_WASM_TOP__ConstPool__CONST_h2f89c816_0)
+    VL_READMEM_N(true, 8, 256, 0, VL_CVT_PACK_STR_NW(8, VTB_WASM_TOP__ConstPool__CONST_h2f89c816_0)
                  ,  &(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_instr_mem_ctrl__DOT__bram)
                  , 0, ~0ULL);
     vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_local_mem__DOT__bram[0U] = 0xaU;

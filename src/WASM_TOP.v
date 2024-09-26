@@ -31,7 +31,7 @@ module WASM_TOP(
     wire stack_empty;
     wire [`instr_read_width-1:0] Instr;
     wire Instr_vld;
-    wire [`log_read_window_size-1:0] read_pointer_shift_minusone;
+    wire [7:0] read_pointer_shift_minusone;
     wire shift_vld;
     wire [1:0] pop_num;
     wire [1:0] push_select;

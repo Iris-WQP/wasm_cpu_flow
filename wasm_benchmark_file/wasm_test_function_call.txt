@@ -185,7 +185,7 @@
 000002f: 41                                        ; i32.const
 0000030: 38                                        ; i32 literal
 0000031: 41                                        ; i32.const
-0000032: ce00                                      ; i32 literal
+0000032: ce00                                      ; i32 literal, 78
 0000034: 10                                        ; call
 0000035: 01                                        ; function index
 0000036: 1a                                        ; drop

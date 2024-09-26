@@ -10,7 +10,7 @@ module CtrlUnit(
         input [(`instr_log2_bram_depth-1):0] read_pointer,
         input [`instr_read_width-1:0] Instr,
         input Instr_vld,
-        output reg [`log_read_window_size-1:0] read_pointer_shift_minusone,
+        output reg [7:0] read_pointer_shift_minusone,
         output reg shift_vld,       //temporary useless
         output reg INSTR_ERROR,
         output reg jump_en,
@@ -103,7 +103,7 @@ module CtrlUnit(
     always@(*) begin
         case (instr_pointer_state)
             module_head: begin
-                    read_pointer_shift_minusone = `log_read_window_size'd7;
+                    read_pointer_shift_minusone = 8'd7;
                     pop_num = 2'd0;
                     push_num = 1'b0;
                     push_select = 2'bZZ;
@@ -164,7 +164,7 @@ module CtrlUnit(
                         end                     
                         8'h0a:begin //Code section
                             if(code_pre_read==1'b1)begin
-                                read_pointer_shift_minusone = LEB128_byte_cnt + LEB128_decode - 'd1; //存在截尾隐患
+                                read_pointer_shift_minusone = LEB128_byte_cnt + LEB128_decode - 'd1;
                                 pop_num = 2'd0;
                                 push_num = 1'b0;
                                 push_select = 2'bZZ;
@@ -453,6 +453,7 @@ module CtrlUnit(
                                 end
                                 else begin
                                     vector_cnt <= vector_cnt + 1'b1;
+                                    function_addr_list[vector_cnt] <= read_pointer;
                                 end
                             end else if (code_pre_read==1'b0)begin
                                 if(jump_en) jump_en <= 1'b0;

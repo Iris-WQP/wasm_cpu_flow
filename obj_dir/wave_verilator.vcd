@@ -7,7 +7,7 @@ $timescale 1s $end
    $var wire 1 e INSTR_ERROR $end
    $var wire 1 f instr_finish $end
    $var wire 1 g stack_full $end
-   $var wire 7 u" read_pointer [6:0] $end
+   $var wire 8 u" read_pointer [7:0] $end
    $var wire 32 v" ALUResult [31:0] $end
    $var wire 1 w" stack_empty $end
    $var wire 32 h clk_cnt [31:0] $end
@@ -21,7 +21,7 @@ $timescale 1s $end
     $var wire 1 j stack_empty $end
     $var wire 72 k Instr [71:0] $end
     $var wire 1 n Instr_vld $end
-    $var wire 4 o read_pointer_shift_minusone [3:0] $end
+    $var wire 8 o read_pointer_shift_minusone [7:0] $end
     $var wire 1 p shift_vld $end
     $var wire 2 q pop_num [1:0] $end
     $var wire 2 r push_select [1:0] $end
@@ -31,9 +31,9 @@ $timescale 1s $end
     $var wire 1 v local_set $end
     $var wire 1 w local_get $end
     $var wire 32 x constant [31:0] $end
-    $var wire 7 y read_pointer [6:0] $end
+    $var wire 8 y read_pointer [7:0] $end
     $var wire 1 z jump_en $end
-    $var wire 7 { jump_addr [6:0] $end
+    $var wire 8 { jump_addr [7:0] $end
     $var wire 32 s" load_data [31:0] $end
     $var wire 32 t" local_mem_data [31:0] $end
     $var wire 1 | load_vld $end
@@ -65,14 +65,14 @@ $timescale 1s $end
     $scope module u_ctrl_unit $end
      $var wire 1 q" clk $end
      $var wire 1 r" rst_n $end
-     $var wire 7 y read_pointer [6:0] $end
+     $var wire 8 y read_pointer [7:0] $end
      $var wire 72 k Instr [71:0] $end
      $var wire 1 n Instr_vld $end
-     $var wire 4 o read_pointer_shift_minusone [3:0] $end
+     $var wire 8 o read_pointer_shift_minusone [7:0] $end
      $var wire 1 p shift_vld $end
      $var wire 1 e INSTR_ERROR $end
      $var wire 1 z jump_en $end
-     $var wire 7 { jump_addr [6:0] $end
+     $var wire 8 { jump_addr [7:0] $end
      $var wire 1 } push_num $end
      $var wire 2 q pop_num [1:0] $end
      $var wire 2 r push_select [1:0] $end
@@ -178,38 +178,38 @@ $timescale 1s $end
      $var wire 72 q! function_type_list[13] [71:0] $end
      $var wire 72 t! function_type_list[14] [71:0] $end
      $var wire 72 w! function_type_list[15] [71:0] $end
-     $var wire 7 z! function_addr_list[0] [6:0] $end
-     $var wire 7 {! function_addr_list[1] [6:0] $end
-     $var wire 7 |! function_addr_list[2] [6:0] $end
-     $var wire 7 }! function_addr_list[3] [6:0] $end
-     $var wire 7 ~! function_addr_list[4] [6:0] $end
-     $var wire 7 !" function_addr_list[5] [6:0] $end
-     $var wire 7 "" function_addr_list[6] [6:0] $end
-     $var wire 7 #" function_addr_list[7] [6:0] $end
-     $var wire 7 $" function_addr_list[8] [6:0] $end
-     $var wire 7 %" function_addr_list[9] [6:0] $end
-     $var wire 7 &" function_addr_list[10] [6:0] $end
-     $var wire 7 '" function_addr_list[11] [6:0] $end
-     $var wire 7 (" function_addr_list[12] [6:0] $end
-     $var wire 7 )" function_addr_list[13] [6:0] $end
-     $var wire 7 *" function_addr_list[14] [6:0] $end
-     $var wire 7 +" function_addr_list[15] [6:0] $end
-     $var wire 7 ," function_addr_list[16] [6:0] $end
-     $var wire 7 -" function_addr_list[17] [6:0] $end
-     $var wire 7 ." function_addr_list[18] [6:0] $end
-     $var wire 7 /" function_addr_list[19] [6:0] $end
-     $var wire 7 0" function_addr_list[20] [6:0] $end
-     $var wire 7 1" function_addr_list[21] [6:0] $end
-     $var wire 7 2" function_addr_list[22] [6:0] $end
-     $var wire 7 3" function_addr_list[23] [6:0] $end
-     $var wire 7 4" function_addr_list[24] [6:0] $end
-     $var wire 7 5" function_addr_list[25] [6:0] $end
-     $var wire 7 6" function_addr_list[26] [6:0] $end
-     $var wire 7 7" function_addr_list[27] [6:0] $end
-     $var wire 7 8" function_addr_list[28] [6:0] $end
-     $var wire 7 9" function_addr_list[29] [6:0] $end
-     $var wire 7 :" function_addr_list[30] [6:0] $end
-     $var wire 7 ;" function_addr_list[31] [6:0] $end
+     $var wire 8 z! function_addr_list[0] [7:0] $end
+     $var wire 8 {! function_addr_list[1] [7:0] $end
+     $var wire 8 |! function_addr_list[2] [7:0] $end
+     $var wire 8 }! function_addr_list[3] [7:0] $end
+     $var wire 8 ~! function_addr_list[4] [7:0] $end
+     $var wire 8 !" function_addr_list[5] [7:0] $end
+     $var wire 8 "" function_addr_list[6] [7:0] $end
+     $var wire 8 #" function_addr_list[7] [7:0] $end
+     $var wire 8 $" function_addr_list[8] [7:0] $end
+     $var wire 8 %" function_addr_list[9] [7:0] $end
+     $var wire 8 &" function_addr_list[10] [7:0] $end
+     $var wire 8 '" function_addr_list[11] [7:0] $end
+     $var wire 8 (" function_addr_list[12] [7:0] $end
+     $var wire 8 )" function_addr_list[13] [7:0] $end
+     $var wire 8 *" function_addr_list[14] [7:0] $end
+     $var wire 8 +" function_addr_list[15] [7:0] $end
+     $var wire 8 ," function_addr_list[16] [7:0] $end
+     $var wire 8 -" function_addr_list[17] [7:0] $end
+     $var wire 8 ." function_addr_list[18] [7:0] $end
+     $var wire 8 /" function_addr_list[19] [7:0] $end
+     $var wire 8 0" function_addr_list[20] [7:0] $end
+     $var wire 8 1" function_addr_list[21] [7:0] $end
+     $var wire 8 2" function_addr_list[22] [7:0] $end
+     $var wire 8 3" function_addr_list[23] [7:0] $end
+     $var wire 8 4" function_addr_list[24] [7:0] $end
+     $var wire 8 5" function_addr_list[25] [7:0] $end
+     $var wire 8 6" function_addr_list[26] [7:0] $end
+     $var wire 8 7" function_addr_list[27] [7:0] $end
+     $var wire 8 8" function_addr_list[28] [7:0] $end
+     $var wire 8 9" function_addr_list[29] [7:0] $end
+     $var wire 8 :" function_addr_list[30] [7:0] $end
+     $var wire 8 ;" function_addr_list[31] [7:0] $end
      $var wire 8 <" start_function_idx [7:0] $end
      $var wire 1 =" function_num_flag $end
      $var wire 1 >" code_pre_read $end
@@ -231,31 +231,31 @@ $timescale 1s $end
     $upscope $end
     $scope module u_instr_mem_ctrl $end
      $var wire 32 X# ADDR_WIDTH [31:0] $end
-     $var wire 32 Y# DATA_WIDTH [31:0] $end
-     $var wire 32 Z# DEPTH [31:0] $end
+     $var wire 32 X# DATA_WIDTH [31:0] $end
+     $var wire 32 Y# DEPTH [31:0] $end
      $var wire 1 q" clk $end
      $var wire 1 r" rst_n $end
      $var wire 1 p shift_vld $end
      $var wire 1 p re $end
-     $var wire 4 o read_pointer_shift_minusone [3:0] $end
+     $var wire 8 o read_pointer_shift_minusone [7:0] $end
      $var wire 72 k rd_data [71:0] $end
      $var wire 1 n rd_data_vld $end
      $var wire 1 x" we $end
      $var wire 5 y" write_pointer_shift_minusone [4:0] $end
      $var wire 256 z" wr_data [255:0] $end
      $var wire 1 z jump_en $end
-     $var wire 7 { jump_addr [6:0] $end
+     $var wire 8 { jump_addr [7:0] $end
      $var wire 1 I" instr_finish $end
-     $var wire 7 y read_pointer_out [6:0] $end
-     $var wire 7 J" read_pointer [6:0] $end
+     $var wire 8 y read_pointer_out [7:0] $end
+     $var wire 8 J" read_pointer [7:0] $end
      $var wire 1 K" working $end
      $var wire 1 L" forward $end
-     $var wire 7 M" write_pointer [6:0] $end
+     $var wire 8 M" write_pointer [7:0] $end
     $upscope $end
     $scope module u_line_memory $end
-     $var wire 32 [# ADDR_WIDTH [31:0] $end
-     $var wire 32 \# DATA_WIDTH [31:0] $end
-     $var wire 32 ]# DEPTH [31:0] $end
+     $var wire 32 Z# ADDR_WIDTH [31:0] $end
+     $var wire 32 [# DATA_WIDTH [31:0] $end
+     $var wire 32 \# DEPTH [31:0] $end
      $var wire 1 q" clk $end
      $var wire 32 i addr [31:0] $end
      $var wire 1 u re $end
@@ -281,9 +281,9 @@ $timescale 1s $end
      $var wire 32 d bram[15] [31:0] $end
     $upscope $end
     $scope module u_local_mem $end
-     $var wire 32 [# ADDR_WIDTH [31:0] $end
-     $var wire 32 \# DATA_WIDTH [31:0] $end
-     $var wire 32 ]# DEPTH [31:0] $end
+     $var wire 32 Z# ADDR_WIDTH [31:0] $end
+     $var wire 32 [# DATA_WIDTH [31:0] $end
+     $var wire 32 \# DEPTH [31:0] $end
      $var wire 1 q" clk $end
      $var wire 32 x addr [31:0] $end
      $var wire 32 t" rd_data [31:0] $end
@@ -373,7 +373,7 @@ b00000000000000000000000000000000 i
 1j
 b000000000000000000000000000000000000000000000000000000000000000000000000 k
 0n
-b0111 o
+b00000111 o
 0p
 b00 q
 b00 r
@@ -383,9 +383,9 @@ b00000 s
 0v
 0w
 b00000000000000000000000000000000 x
-b0000000 y
+b00000000 y
 0z
-b0000000 {
+b00000000 {
 0|
 0}
 b000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 ~
@@ -443,38 +443,38 @@ b000000000000000000000000000000000000000000000000000000000000000000000000 n!
 b000000000000000000000000000000000000000000000000000000000000000000000000 q!
 b000000000000000000000000000000000000000000000000000000000000000000000000 t!
 b000000000000000000000000000000000000000000000000000000000000000000000000 w!
-b0000000 z!
-b0000000 {!
-b0000000 |!
-b0000000 }!
-b0000000 ~!
-b0000000 !"
-b0000000 ""
-b0000000 #"
-b0000000 $"
-b0000000 %"
-b0000000 &"
-b0000000 '"
-b0000000 ("
-b0000000 )"
-b0000000 *"
-b0000000 +"
-b0000000 ,"
-b0000000 -"
-b0000000 ."
-b0000000 /"
-b0000000 0"
-b0000000 1"
-b0000000 2"
-b0000000 3"
-b0000000 4"
-b0000000 5"
-b0000000 6"
-b0000000 7"
-b0000000 8"
-b0000000 9"
-b0000000 :"
-b0000000 ;"
+b00000000 z!
+b00000000 {!
+b00000000 |!
+b00000000 }!
+b00000000 ~!
+b00000000 !"
+b00000000 ""
+b00000000 #"
+b00000000 $"
+b00000000 %"
+b00000000 &"
+b00000000 '"
+b00000000 ("
+b00000000 )"
+b00000000 *"
+b00000000 +"
+b00000000 ,"
+b00000000 -"
+b00000000 ."
+b00000000 /"
+b00000000 0"
+b00000000 1"
+b00000000 2"
+b00000000 3"
+b00000000 4"
+b00000000 5"
+b00000000 6"
+b00000000 7"
+b00000000 8"
+b00000000 9"
+b00000000 :"
+b00000000 ;"
 b00000000 <"
 1="
 0>"
@@ -489,10 +489,10 @@ b0000000 F"
 b0000000 G"
 b0000 H"
 1I"
-b0000000 J"
+b00000000 J"
 0K"
 0L"
-b0000000 M"
+b00000000 M"
 b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 N"
 b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 ^"
 b0000 n"
@@ -502,7 +502,7 @@ b0000 p"
 1r"
 b00000000000000000000000000000000 s"
 b00000000000000000000000000001010 t"
-b0000000 u"
+b00000000 u"
 b00000000000000000000000000000000 v"
 0w"
 0x"
@@ -560,12 +560,11 @@ b00000000000000000000000000000000 T#
 b00000000000000000000000000000000 U#
 b00000000000000000000000000000000 V#
 b00000000000000000000000000000000 W#
-b00000000000000000000000000000111 X#
-b00000000000000000000000000001000 Y#
-b00000000000000000000000010000000 Z#
-b00000000000000000000000000000100 [#
-b00000000000000000000000000100000 \#
-b00000000000000000000000000010000 ]#
+b00000000000000000000000000001000 X#
+b00000000000000000000000100000000 Y#
+b00000000000000000000000000000100 Z#
+b00000000000000000000000000100000 [#
+b00000000000000000000000000010000 \#
 #1
 #2
 #3

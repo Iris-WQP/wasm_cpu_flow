@@ -43,7 +43,7 @@ VTB_WASM_TOP__Syms::VTB_WASM_TOP__Syms(VerilatedContext* contextp, const char* n
     , TOP{this, namep}
 {
         // Check resources
-        Verilated::stackCheck(96);
+        Verilated::stackCheck(102);
     // Configure time unit / time precision
     _vm_contextp__->timeunit(-12);
     _vm_contextp__->timeprecision(-12);

@@ -21,10 +21,10 @@ class alignas(VL_CACHE_LINE_BYTES) VTB_WASM_TOP___024root final : public Verilat
         CData/*0:0*/ TB_WASM_TOP__DOT__rst_n;
         CData/*0:0*/ TB_WASM_TOP__DOT__INSTR_ERROR;
         CData/*0:0*/ TB_WASM_TOP__DOT__instr_finish;
-        CData/*6:0*/ TB_WASM_TOP__DOT__read_pointer;
+        CData/*7:0*/ TB_WASM_TOP__DOT__read_pointer;
         CData/*0:0*/ TB_WASM_TOP__DOT__stack_empty;
         CData/*0:0*/ TB_WASM_TOP__DOT__u_wasm_top__DOT__Instr_vld;
-        CData/*3:0*/ TB_WASM_TOP__DOT__u_wasm_top__DOT__read_pointer_shift_minusone;
+        CData/*7:0*/ TB_WASM_TOP__DOT__u_wasm_top__DOT__read_pointer_shift_minusone;
         CData/*0:0*/ TB_WASM_TOP__DOT__u_wasm_top__DOT__shift_vld;
         CData/*1:0*/ TB_WASM_TOP__DOT__u_wasm_top__DOT__pop_num;
         CData/*1:0*/ TB_WASM_TOP__DOT__u_wasm_top__DOT__push_select;
@@ -32,9 +32,9 @@ class alignas(VL_CACHE_LINE_BYTES) VTB_WASM_TOP___024root final : public Verilat
         CData/*0:0*/ TB_WASM_TOP__DOT__u_wasm_top__DOT__store_en;
         CData/*0:0*/ TB_WASM_TOP__DOT__u_wasm_top__DOT__load_en;
         CData/*0:0*/ TB_WASM_TOP__DOT__u_wasm_top__DOT__local_set;
-        CData/*6:0*/ TB_WASM_TOP__DOT__u_wasm_top__DOT__read_pointer;
+        CData/*7:0*/ TB_WASM_TOP__DOT__u_wasm_top__DOT__read_pointer;
         CData/*0:0*/ TB_WASM_TOP__DOT__u_wasm_top__DOT__jump_en;
-        CData/*6:0*/ TB_WASM_TOP__DOT__u_wasm_top__DOT__jump_addr;
+        CData/*7:0*/ TB_WASM_TOP__DOT__u_wasm_top__DOT__jump_addr;
         CData/*0:0*/ TB_WASM_TOP__DOT__u_wasm_top__DOT__load_vld;
         CData/*0:0*/ TB_WASM_TOP__DOT__u_wasm_top__DOT__push_num;
         CData/*4:0*/ TB_WASM_TOP__DOT__u_wasm_top__DOT__write_pointer_shift_minusone;
@@ -101,9 +101,9 @@ class alignas(VL_CACHE_LINE_BYTES) VTB_WASM_TOP___024root final : public Verilat
         CData/*4:0*/ TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__ALUControl__out__strong__out75;
         CData/*0:0*/ TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT____VdfgRegularize_hbf18cbca_0_1;
         CData/*0:0*/ TB_WASM_TOP__DOT__u_wasm_top__DOT__u_instr_mem_ctrl__DOT__instr_finish;
-        CData/*6:0*/ TB_WASM_TOP__DOT__u_wasm_top__DOT__u_instr_mem_ctrl__DOT__read_pointer;
+        CData/*7:0*/ TB_WASM_TOP__DOT__u_wasm_top__DOT__u_instr_mem_ctrl__DOT__read_pointer;
         CData/*0:0*/ TB_WASM_TOP__DOT__u_wasm_top__DOT__u_instr_mem_ctrl__DOT__working;
-        CData/*6:0*/ TB_WASM_TOP__DOT__u_wasm_top__DOT__u_instr_mem_ctrl__DOT__write_pointer;
+        CData/*7:0*/ TB_WASM_TOP__DOT__u_wasm_top__DOT__u_instr_mem_ctrl__DOT__write_pointer;
         CData/*3:0*/ TB_WASM_TOP__DOT__u_wasm_top__DOT__u_stack__DOT__pointer;
         CData/*3:0*/ TB_WASM_TOP__DOT__u_wasm_top__DOT__u_stack__DOT__pointer_after_pop;
         CData/*3:0*/ __VdlyDim0__TB_WASM_TOP__DOT__u_wasm_top__DOT__u_local_mem__DOT__bram__v0;
@@ -140,9 +140,9 @@ class alignas(VL_CACHE_LINE_BYTES) VTB_WASM_TOP___024root final : public Verilat
         VlUnpacked<CData/*7:0*/, 8> TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__para_num_reg;
         VlUnpacked<CData/*7:0*/, 8> TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__retu_num_reg;
         VlUnpacked<VlWide<3>/*71:0*/, 16> TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__function_type_list;
-        VlUnpacked<CData/*6:0*/, 32> TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__function_addr_list;
+        VlUnpacked<CData/*7:0*/, 32> TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__function_addr_list;
         VlUnpacked<CData/*6:0*/, 4> TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__u_decode__DOT__dt;
-        VlUnpacked<CData/*7:0*/, 128> TB_WASM_TOP__DOT__u_wasm_top__DOT__u_instr_mem_ctrl__DOT__bram;
+        VlUnpacked<CData/*7:0*/, 256> TB_WASM_TOP__DOT__u_wasm_top__DOT__u_instr_mem_ctrl__DOT__bram;
         VlUnpacked<IData/*31:0*/, 16> TB_WASM_TOP__DOT__u_wasm_top__DOT__u_line_memory__DOT__bram;
         VlUnpacked<IData/*31:0*/, 16> TB_WASM_TOP__DOT__u_wasm_top__DOT__u_local_mem__DOT__bram;
         VlUnpacked<CData/*0:0*/, 6> __Vm_traceActivity;

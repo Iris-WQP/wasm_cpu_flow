@@ -108,10 +108,6 @@ VL_ATTR_COLD void VTB_WASM_TOP___024root___stl_sequent__TOP__0(VTB_WASM_TOP___02
     vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_instr_mem_ctrl__DOT__instr_finish 
         = ((IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_instr_mem_ctrl__DOT__read_pointer) 
            == (IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_instr_mem_ctrl__DOT__write_pointer));
-    vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__read_pointer 
-        = ((IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__jump_en)
-            ? (IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__jump_addr)
-            : (IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_instr_mem_ctrl__DOT__read_pointer));
     vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__Instr_vld 
         = vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__shift_vld;
     vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__function_num_left 
@@ -120,48 +116,52 @@ VL_ATTR_COLD void VTB_WASM_TOP___024root___stl_sequent__TOP__0(VTB_WASM_TOP___02
     vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT____VdfgRegularize_hbf18cbca_0_1 
         = ((0xaU == (IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__section_type)) 
            & (3U == (IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__instr_pointer_state)));
+    vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__read_pointer 
+        = ((IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__jump_en)
+            ? (IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__jump_addr)
+            : (IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_instr_mem_ctrl__DOT__read_pointer));
     if (vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__shift_vld) {
         vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__Instr[0U] 
             = ((0xffffff00U & vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__Instr[0U]) 
                | vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_instr_mem_ctrl__DOT__bram
-               [vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_instr_mem_ctrl__DOT__read_pointer]);
+               [vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__read_pointer]);
         vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__Instr[0U] 
             = ((0xffff00ffU & vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__Instr[0U]) 
                | (vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_instr_mem_ctrl__DOT__bram
-                  [(0x7fU & ((IData)(1U) + (IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_instr_mem_ctrl__DOT__read_pointer)))] 
+                  [(0xffU & ((IData)(1U) + (IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__read_pointer)))] 
                   << 8U));
         vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__Instr[0U] 
             = ((0xff00ffffU & vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__Instr[0U]) 
                | (vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_instr_mem_ctrl__DOT__bram
-                  [(0x7fU & ((IData)(2U) + (IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_instr_mem_ctrl__DOT__read_pointer)))] 
+                  [(0xffU & ((IData)(2U) + (IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__read_pointer)))] 
                   << 0x10U));
         vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__Instr[0U] 
             = ((0xffffffU & vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__Instr[0U]) 
                | (vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_instr_mem_ctrl__DOT__bram
-                  [(0x7fU & ((IData)(3U) + (IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_instr_mem_ctrl__DOT__read_pointer)))] 
+                  [(0xffU & ((IData)(3U) + (IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__read_pointer)))] 
                   << 0x18U));
         vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__Instr[1U] 
             = ((0xffffff00U & vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__Instr[1U]) 
                | vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_instr_mem_ctrl__DOT__bram
-               [(0x7fU & ((IData)(4U) + (IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_instr_mem_ctrl__DOT__read_pointer)))]);
+               [(0xffU & ((IData)(4U) + (IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__read_pointer)))]);
         vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__Instr[1U] 
             = ((0xffff00ffU & vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__Instr[1U]) 
                | (vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_instr_mem_ctrl__DOT__bram
-                  [(0x7fU & ((IData)(5U) + (IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_instr_mem_ctrl__DOT__read_pointer)))] 
+                  [(0xffU & ((IData)(5U) + (IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__read_pointer)))] 
                   << 8U));
         vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__Instr[1U] 
             = ((0xff00ffffU & vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__Instr[1U]) 
                | (vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_instr_mem_ctrl__DOT__bram
-                  [(0x7fU & ((IData)(6U) + (IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_instr_mem_ctrl__DOT__read_pointer)))] 
+                  [(0xffU & ((IData)(6U) + (IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__read_pointer)))] 
                   << 0x10U));
         vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__Instr[1U] 
             = ((0xffffffU & vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__Instr[1U]) 
                | (vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_instr_mem_ctrl__DOT__bram
-                  [(0x7fU & ((IData)(7U) + (IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_instr_mem_ctrl__DOT__read_pointer)))] 
+                  [(0xffU & ((IData)(7U) + (IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__read_pointer)))] 
                   << 0x18U));
         vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__Instr[2U] 
             = (0xffU & vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_instr_mem_ctrl__DOT__bram
-               [(0x7fU & ((IData)(8U) + (IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_instr_mem_ctrl__DOT__read_pointer)))]);
+               [(0xffU & ((IData)(8U) + (IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__read_pointer)))]);
     } else {
         vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__Instr[0U] = 0U;
         vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__Instr[1U] = 0U;
@@ -1356,123 +1356,123 @@ VL_ATTR_COLD void VTB_WASM_TOP___024root___stl_sequent__TOP__0(VTB_WASM_TOP___02
             [0U];
     }
     vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__read_pointer_shift_minusone 
-        = (0xfU & ((2U & (IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__instr_pointer_state))
-                    ? ((1U & (IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__instr_pointer_state))
-                        ? ((1U == (IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__section_type))
-                            ? ((IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__type_decode)
-                                ? vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__Instr[0U]
-                                : ((IData)(1U) + ((
-                                                   vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__Instr[0U] 
-                                                   << 0x18U) 
-                                                  | (vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__Instr[0U] 
-                                                     >> 8U))))
-                            : ((3U == (IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__section_type))
-                                ? (((9U > (IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__function_num_left))
-                                     ? (IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__function_num_left)
-                                     : 9U) - (IData)(1U))
-                                : ((0xaU == (IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__section_type))
-                                    ? ((IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__code_pre_read)
-                                        ? (((IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__LEB128_byte_cnt) 
-                                            + vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__LEB128_decode) 
-                                           - (IData)(1U))
-                                        : ((0x80U & 
-                                            vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__Instr[0U])
-                                            ? 0U : 
-                                           ((0x40U 
+        = (0xffU & ((2U & (IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__instr_pointer_state))
+                     ? ((1U & (IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__instr_pointer_state))
+                         ? ((1U == (IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__section_type))
+                             ? ((IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__type_decode)
+                                 ? (0xfU & vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__Instr[0U])
+                                 : ((IData)(1U) + (0xfU 
+                                                   & (vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__Instr[0U] 
+                                                      >> 8U))))
+                             : ((3U == (IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__section_type))
+                                 ? (((9U > (IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__function_num_left))
+                                      ? (IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__function_num_left)
+                                      : 9U) - (IData)(1U))
+                                 : ((0xaU == (IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__section_type))
+                                     ? ((IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__code_pre_read)
+                                         ? (((IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__LEB128_byte_cnt) 
+                                             + vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__LEB128_decode) 
+                                            - (IData)(1U))
+                                         : ((0x80U 
                                              & vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__Instr[0U])
-                                             ? ((0x20U 
-                                                 & vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__Instr[0U])
-                                                 ? 0U
-                                                 : 
-                                                ((0x10U 
+                                             ? 0U : 
+                                            ((0x40U 
+                                              & vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__Instr[0U])
+                                              ? ((0x20U 
                                                   & vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__Instr[0U])
                                                   ? 0U
                                                   : 
-                                                 ((8U 
+                                                 ((0x10U 
                                                    & vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__Instr[0U])
                                                    ? 0U
                                                    : 
-                                                  ((4U 
+                                                  ((8U 
                                                     & vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__Instr[0U])
                                                     ? 0U
                                                     : 
-                                                   ((2U 
+                                                   ((4U 
                                                      & vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__Instr[0U])
                                                      ? 0U
                                                      : 
-                                                    ((1U 
+                                                    ((2U 
                                                       & vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__Instr[0U])
-                                                      ? (IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__LEB128_byte_cnt)
-                                                      : 0U))))))
-                                             : ((0x20U 
-                                                 & vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__Instr[0U])
-                                                 ? 
-                                                ((0x10U 
+                                                      ? 0U
+                                                      : 
+                                                     ((1U 
+                                                       & vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__Instr[0U])
+                                                       ? (IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__LEB128_byte_cnt)
+                                                       : 0U))))))
+                                              : ((0x20U 
                                                   & vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__Instr[0U])
                                                   ? 
-                                                 ((8U 
-                                                   & vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__Instr[0U])
-                                                   ? 0U
-                                                   : 
-                                                  ((4U 
-                                                    & vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__Instr[0U])
-                                                    ? 
-                                                   ((2U 
-                                                     & vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__Instr[0U])
-                                                     ? 
-                                                    ((1U 
-                                                      & vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__Instr[0U])
-                                                      ? 0U
-                                                      : 
-                                                     ((IData)(1U) 
-                                                      + (IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__LEB128_byte_cnt)))
-                                                     : 0U)
-                                                    : 0U))
-                                                  : 
-                                                 ((8U 
+                                                 ((0x10U 
                                                    & vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__Instr[0U])
                                                    ? 
-                                                  ((4U 
+                                                  ((8U 
                                                     & vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__Instr[0U])
                                                     ? 0U
                                                     : 
-                                                   ((2U 
+                                                   ((4U 
+                                                     & vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__Instr[0U])
+                                                     ? 
+                                                    ((2U 
+                                                      & vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__Instr[0U])
+                                                      ? 
+                                                     ((1U 
+                                                       & vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__Instr[0U])
+                                                       ? 0U
+                                                       : 
+                                                      ((IData)(1U) 
+                                                       + (IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__LEB128_byte_cnt)))
+                                                      : 0U)
+                                                     : 0U))
+                                                   : 
+                                                  ((8U 
+                                                    & vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__Instr[0U])
+                                                    ? 
+                                                   ((4U 
                                                      & vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__Instr[0U])
                                                      ? 0U
                                                      : 
-                                                    ((1U 
+                                                    ((2U 
                                                       & vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__Instr[0U])
                                                       ? 0U
                                                       : 
-                                                     ((IData)(1U) 
-                                                      + (IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__LEB128_byte_cnt)))))
-                                                   : 
-                                                  ((4U 
-                                                    & vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__Instr[0U])
-                                                    ? 0U
+                                                     ((1U 
+                                                       & vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__Instr[0U])
+                                                       ? 0U
+                                                       : 
+                                                      ((IData)(1U) 
+                                                       + (IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__LEB128_byte_cnt)))))
                                                     : 
-                                                   ((2U 
+                                                   ((4U 
                                                      & vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__Instr[0U])
-                                                     ? 
-                                                    ((1U 
+                                                     ? 0U
+                                                     : 
+                                                    ((2U 
                                                       & vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__Instr[0U])
-                                                      ? 0U
-                                                      : (IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__LEB128_byte_cnt))
-                                                     : (IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__LEB128_byte_cnt)))))
-                                                 : 0U))))
-                                    : 0U))) : ((((0xaU 
-                                                  == (IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__section_type)) 
-                                                 || (1U 
-                                                     == (IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__section_type))) 
-                                                || (3U 
-                                                    == (IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__section_type)))
-                                                ? ((IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__LEB128_byte_cnt) 
-                                                   - (IData)(1U))
-                                                : (vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__section_length 
-                                                   - (IData)(1U))))
-                    : ((1U & (IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__instr_pointer_state))
-                        ? (IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__LEB128_byte_cnt)
-                        : 7U)));
+                                                      ? 
+                                                     ((1U 
+                                                       & vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__Instr[0U])
+                                                       ? 0U
+                                                       : (IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__LEB128_byte_cnt))
+                                                      : (IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__LEB128_byte_cnt)))))
+                                                  : 0U))))
+                                     : 0U))) : ((((0xaU 
+                                                   == (IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__section_type)) 
+                                                  || (1U 
+                                                      == (IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__section_type))) 
+                                                 || (3U 
+                                                     == (IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__section_type)))
+                                                 ? 
+                                                ((IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__LEB128_byte_cnt) 
+                                                 - (IData)(1U))
+                                                 : 
+                                                (vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__section_length 
+                                                 - (IData)(1U))))
+                     : ((1U & (IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__instr_pointer_state))
+                         ? (IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__LEB128_byte_cnt)
+                         : 7U)));
     vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__B_offset 
         = (((IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__load_en) 
             | (IData)(vlSelfRef.TB_WASM_TOP__DOT__u_wasm_top__DOT__store_en))
@@ -1672,14 +1672,14 @@ VL_ATTR_COLD void VTB_WASM_TOP___024root___ctor_var_reset(VTB_WASM_TOP___024root
     vlSelf->TB_WASM_TOP__DOT__rst_n = VL_RAND_RESET_I(1);
     vlSelf->TB_WASM_TOP__DOT__INSTR_ERROR = VL_RAND_RESET_I(1);
     vlSelf->TB_WASM_TOP__DOT__instr_finish = VL_RAND_RESET_I(1);
-    vlSelf->TB_WASM_TOP__DOT__read_pointer = VL_RAND_RESET_I(7);
+    vlSelf->TB_WASM_TOP__DOT__read_pointer = VL_RAND_RESET_I(8);
     vlSelf->TB_WASM_TOP__DOT__ALUResult = VL_RAND_RESET_I(32);
     vlSelf->TB_WASM_TOP__DOT__stack_empty = VL_RAND_RESET_I(1);
     vlSelf->TB_WASM_TOP__DOT__clk_cnt = VL_RAND_RESET_I(32);
     vlSelf->TB_WASM_TOP__DOT__u_wasm_top__DOT__ALUResult = VL_RAND_RESET_I(32);
     VL_RAND_RESET_W(72, vlSelf->TB_WASM_TOP__DOT__u_wasm_top__DOT__Instr);
     vlSelf->TB_WASM_TOP__DOT__u_wasm_top__DOT__Instr_vld = VL_RAND_RESET_I(1);
-    vlSelf->TB_WASM_TOP__DOT__u_wasm_top__DOT__read_pointer_shift_minusone = VL_RAND_RESET_I(4);
+    vlSelf->TB_WASM_TOP__DOT__u_wasm_top__DOT__read_pointer_shift_minusone = VL_RAND_RESET_I(8);
     vlSelf->TB_WASM_TOP__DOT__u_wasm_top__DOT__shift_vld = VL_RAND_RESET_I(1);
     vlSelf->TB_WASM_TOP__DOT__u_wasm_top__DOT__pop_num = VL_RAND_RESET_I(2);
     vlSelf->TB_WASM_TOP__DOT__u_wasm_top__DOT__push_select = VL_RAND_RESET_I(2);
@@ -1687,9 +1687,9 @@ VL_ATTR_COLD void VTB_WASM_TOP___024root___ctor_var_reset(VTB_WASM_TOP___024root
     vlSelf->TB_WASM_TOP__DOT__u_wasm_top__DOT__store_en = VL_RAND_RESET_I(1);
     vlSelf->TB_WASM_TOP__DOT__u_wasm_top__DOT__load_en = VL_RAND_RESET_I(1);
     vlSelf->TB_WASM_TOP__DOT__u_wasm_top__DOT__local_set = VL_RAND_RESET_I(1);
-    vlSelf->TB_WASM_TOP__DOT__u_wasm_top__DOT__read_pointer = VL_RAND_RESET_I(7);
+    vlSelf->TB_WASM_TOP__DOT__u_wasm_top__DOT__read_pointer = VL_RAND_RESET_I(8);
     vlSelf->TB_WASM_TOP__DOT__u_wasm_top__DOT__jump_en = VL_RAND_RESET_I(1);
-    vlSelf->TB_WASM_TOP__DOT__u_wasm_top__DOT__jump_addr = VL_RAND_RESET_I(7);
+    vlSelf->TB_WASM_TOP__DOT__u_wasm_top__DOT__jump_addr = VL_RAND_RESET_I(8);
     vlSelf->TB_WASM_TOP__DOT__u_wasm_top__DOT__load_data = VL_RAND_RESET_I(32);
     vlSelf->TB_WASM_TOP__DOT__u_wasm_top__DOT__load_vld = VL_RAND_RESET_I(1);
     vlSelf->TB_WASM_TOP__DOT__u_wasm_top__DOT__push_num = VL_RAND_RESET_I(1);
@@ -1726,7 +1726,7 @@ VL_ATTR_COLD void VTB_WASM_TOP___024root___ctor_var_reset(VTB_WASM_TOP___024root
         VL_RAND_RESET_W(72, vlSelf->TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__function_type_list[__Vi0]);
     }
     for (int __Vi0 = 0; __Vi0 < 32; ++__Vi0) {
-        vlSelf->TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__function_addr_list[__Vi0] = VL_RAND_RESET_I(7);
+        vlSelf->TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__function_addr_list[__Vi0] = VL_RAND_RESET_I(8);
     }
     vlSelf->TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__start_function_idx = VL_RAND_RESET_I(8);
     vlSelf->TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__code_pre_read = VL_RAND_RESET_I(1);
@@ -1786,12 +1786,12 @@ VL_ATTR_COLD void VTB_WASM_TOP___024root___ctor_var_reset(VTB_WASM_TOP___024root
         vlSelf->TB_WASM_TOP__DOT__u_wasm_top__DOT__u_ctrl_unit__DOT__u_decode__DOT__dt[__Vi0] = VL_RAND_RESET_I(7);
     }
     vlSelf->TB_WASM_TOP__DOT__u_wasm_top__DOT__u_instr_mem_ctrl__DOT__instr_finish = VL_RAND_RESET_I(1);
-    vlSelf->TB_WASM_TOP__DOT__u_wasm_top__DOT__u_instr_mem_ctrl__DOT__read_pointer = VL_RAND_RESET_I(7);
+    vlSelf->TB_WASM_TOP__DOT__u_wasm_top__DOT__u_instr_mem_ctrl__DOT__read_pointer = VL_RAND_RESET_I(8);
     vlSelf->TB_WASM_TOP__DOT__u_wasm_top__DOT__u_instr_mem_ctrl__DOT__working = VL_RAND_RESET_I(1);
-    for (int __Vi0 = 0; __Vi0 < 128; ++__Vi0) {
+    for (int __Vi0 = 0; __Vi0 < 256; ++__Vi0) {
         vlSelf->TB_WASM_TOP__DOT__u_wasm_top__DOT__u_instr_mem_ctrl__DOT__bram[__Vi0] = VL_RAND_RESET_I(8);
     }
-    vlSelf->TB_WASM_TOP__DOT__u_wasm_top__DOT__u_instr_mem_ctrl__DOT__write_pointer = VL_RAND_RESET_I(7);
+    vlSelf->TB_WASM_TOP__DOT__u_wasm_top__DOT__u_instr_mem_ctrl__DOT__write_pointer = VL_RAND_RESET_I(8);
     vlSelf->TB_WASM_TOP__DOT__u_wasm_top__DOT__u_alu__DOT__sum = VL_RAND_RESET_I(32);
     vlSelf->TB_WASM_TOP__DOT__u_wasm_top__DOT__u_alu__DOT__eq = VL_RAND_RESET_I(32);
     vlSelf->TB_WASM_TOP__DOT__u_wasm_top__DOT__u_alu__DOT__lt_u = VL_RAND_RESET_I(32);
