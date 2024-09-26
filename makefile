@@ -1,4 +1,4 @@
-test_instr = wasm_test0_hex.txt
+test_instr = wasm_test_function_call_hex.txt
 tb_name = TB_WASM_TOP.v
 
 verilator:

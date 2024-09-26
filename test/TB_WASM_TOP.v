@@ -48,7 +48,7 @@ module TB_WASM_TOP;
 
     initial begin
         $display("Loading test data");
-        $readmemh("wasm_test0_hex.txt", u_wasm_top.u_instr_mem_ctrl.bram);
+        $readmemh("wasm_test_function_call_hex.txt", u_wasm_top.u_instr_mem_ctrl.bram);
     end
 
 //    count clk from reset to instr_finish==1

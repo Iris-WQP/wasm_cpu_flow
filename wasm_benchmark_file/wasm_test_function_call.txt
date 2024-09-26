@@ -38,12 +38,12 @@
 0000009: 0a                                        ; FIXUP section size
 ; section "Function" (3)
 0000014: 03                                        ; section code
-0000015: 00                                        ; section size (guess)
+0000015: 00                                        ; section size (guess) fix up section size = 3
 0000016: 02                                        ; num functions
 0000017: 00                                        ; function 0 signature index
 0000018: 01                                        ; function 1 signature index
 0000015: 03                                        ; FIXUP section size
-; section "Export" (7)
+; section "Export" (7)    ;skip
 0000019: 07                                        ; section code
 000001a: 00                                        ; section size (guess)
 000001b: 01                                        ; num exports
@@ -62,7 +62,7 @@
 0000027: 00                                        ; section size (guess)
 0000028: 02                                        ; num functions
 ; function body 0
-0000029: 00                                        ; func body size (guess)
+0000029: 00      fixed up function body size = 10  ; func body size (guess) 
 000002a: 00                                        ; local decl count
 000002b: 41                                        ; i32.const
 000002c: 0c                                        ; i32 literal

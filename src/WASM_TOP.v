@@ -41,7 +41,10 @@ module WASM_TOP(
     wire local_set;
     wire local_get;
     wire [31:0] constant;
-    
+    wire [(`instr_log2_bram_depth-1):0] read_pointer;
+    wire jump_en;
+    wire [`instr_log2_bram_depth-1:0] jump_addr;
+
     //line memory
     wire [`bram_in_width-1:0] load_data;
     wire [`bram_in_width-1:0] local_mem_data;
@@ -65,11 +68,14 @@ module WASM_TOP(
     CtrlUnit u_ctrl_unit (
         .clk(i_clk),
         .rst_n(i_rst_n),
+        .read_pointer(read_pointer),
         .Instr(Instr),
         .Instr_vld(Instr_vld),
         .read_pointer_shift_minusone(read_pointer_shift_minusone),
         .shift_vld(shift_vld),
         .INSTR_ERROR(o_INSTR_ERROR),
+        .jump_en(jump_en),
+        .jump_addr(jump_addr),
         .push_num(push_num),
         .pop_num(pop_num),
         .push_select(push_select),
@@ -105,7 +111,11 @@ InstrMemCtrl #
                 .we(wr_req_vld),     //wr_req_vld
                 .write_pointer_shift_minusone(write_pointer_shift_minusone),
                 .wr_data(wr_data),
-                .instr_finish()
+                //jump
+                .jump_en(jump_en),
+                .jump_addr(jump_addr),
+                .instr_finish(),
+                .read_pointer_out(read_pointer)
                 // .instr_finish(o_instr_finish)
         // //debug
         //         ,

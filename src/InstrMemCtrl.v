@@ -18,9 +18,14 @@ module InstrMemCtrl #
                 input we,     //wr_req_vld
                 input [`log_write_window_size-1:0] write_pointer_shift_minusone,
                 input [`instr_write_width-1:0] wr_data,
+
+                //jump
+                input jump_en,
+                input [`instr_log2_bram_depth-1:0] jump_addr,
                 
                 //judge if finish instrs
-                output instr_finish
+                output instr_finish,
+                output [ADDR_WIDTH-1:0] read_pointer_out
 
         // //debug
         //         ,
@@ -28,19 +33,19 @@ module InstrMemCtrl #
         //         output reg [ADDR_WIDTH-1:0] write_pointer
             //  ,output  [DATA_WIDTH-1:0] bram_sample_0,                
             //  output  [DATA_WIDTH-1:0] bram_sample_1        
-                          );
+            );
         //debug
             //  assign bram_sample_0 = bram[0];
             //  assign bram_sample_1 = bram[1];
             //  assign bram_sample_254 = bram[254];
             //  assign bram_sample_255 = bram[255];
 
-
+    reg [ADDR_WIDTH-1:0] read_pointer;
     reg working;
     wire forward;
 //    (*ram_style="block"*)
     reg [DATA_WIDTH-1:0] bram [0:DEPTH-1];
-    reg [ADDR_WIDTH-1:0] read_pointer; 
+    // reg [ADDR_WIDTH-1:0] read_pointer; 
     reg [ADDR_WIDTH-1:0] write_pointer;
     assign instr_finish = (read_pointer == write_pointer);
     assign forward = working&(~instr_finish);
@@ -61,13 +66,15 @@ module InstrMemCtrl #
         end
     end
 
+    assign read_pointer_out = (jump_en)?jump_addr:read_pointer;
+
     //read pointer change in the cycle when shift_vld is high
     always@(posedge clk or negedge rst_n) begin
         if(~rst_n) begin  
             read_pointer <= 0;
         end else begin
             if(shift_vld&forward)begin
-                    read_pointer <= read_pointer + {2'b0, read_pointer_shift_minusone} + 'b1;
+                    read_pointer <= (jump_en)?(jump_addr + read_pointer_shift_minusone + 'b1):(read_pointer + {2'b0, read_pointer_shift_minusone} + 'b1);
             end
         end
     end
