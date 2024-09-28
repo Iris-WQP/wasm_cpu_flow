@@ -23,7 +23,7 @@ case(ALUControl)
     5'b00000, 5'b0001: ALUResult = sum;
     5'b00010: ALUResult = A&B;
     5'b00011: ALUResult = A|B;
-    5'b00100: ALUResult = eqz[0]? B:C;
+    5'b00100: ALUResult = eqz[0]? C:B;
     5'b00101: ALUResult = eqz;
     5'b00110: ALUResult = eq;
     5'b00111: ALUResult = lt_u;//unsigned lt

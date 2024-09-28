@@ -33,7 +33,7 @@ module WASM_TOP(
     wire Instr_vld;
     wire [7:0] read_pointer_shift_minusone;
     wire shift_vld;
-    wire [1:0] pop_num;
+    wire [3:0] pop_num;
     wire [1:0] push_select;
     wire [4:0] ALUControl;
     wire store_en;
@@ -44,6 +44,7 @@ module WASM_TOP(
     wire [(`instr_log2_bram_depth-1):0] read_pointer;
     wire jump_en;
     wire [`instr_log2_bram_depth-1:0] jump_addr;
+    wire hlt;
 
     //line memory
     wire [`bram_in_width-1:0] load_data;
@@ -85,6 +86,7 @@ module WASM_TOP(
         .local_set(local_set),
         .local_get(local_get),
         .constant(constant),
+        .hlt(hlt),
         .instr_finish(o_instr_finish)
     );
 
@@ -102,6 +104,7 @@ InstrMemCtrl #
                 .clk(i_clk),
                 .rst_n(i_rst_n),
                 .shift_vld(shift_vld),
+                .hlt(hlt),
                 
                 .re(shift_vld),
                 .read_pointer_shift_minusone(read_pointer_shift_minusone),

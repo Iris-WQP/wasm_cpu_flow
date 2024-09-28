@@ -9,6 +9,7 @@ module InstrMemCtrl #
                 input clk,
                 input rst_n,
                 input  shift_vld,
+                input hlt,
                 
                 input re,
                 input [7:0] read_pointer_shift_minusone,
@@ -48,7 +49,7 @@ module InstrMemCtrl #
     // reg [ADDR_WIDTH-1:0] read_pointer; 
     reg [ADDR_WIDTH-1:0] write_pointer;
     assign instr_finish = (read_pointer == write_pointer);
-    assign forward = working&(~instr_finish);
+    assign forward = working&(~instr_finish)&(~hlt);
     always @(posedge clk or negedge rst_n) begin
         if(~rst_n) working <= 1'b1;
         else if(instr_finish) working <= 1'b0;
@@ -58,7 +59,7 @@ module InstrMemCtrl #
     always @(posedge clk or negedge rst_n) begin
         if(~rst_n) begin  
 //            write_pointer <= 0;
-              write_pointer <= 'd52;
+              write_pointer <= 'd200;
         end else begin
             if(we)begin
                 write_pointer <= write_pointer + write_pointer_shift_minusone + 1;
@@ -107,6 +108,9 @@ module InstrMemCtrl #
         end
     endgenerate      
 
+endmodule
+
+//------------------------------------------------------------------------------------------------------------------------
 // always@(posedge clk or negedge rst_n) begin
 //     if(~rst_n) begin
 //         bram[0]  <= 8'h00;
@@ -163,8 +167,3 @@ module InstrMemCtrl #
 //         bram[51] <= 8'h00;       
 //     end
 // end
-
-
-endmodule
-
-

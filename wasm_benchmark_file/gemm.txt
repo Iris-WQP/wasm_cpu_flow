@@ -254,7 +254,7 @@
 0000188: 00                                        ; section size (guess)
 0000189: 01                                        ; num globals
 000018a: 7f                                        ; i32
-000018b: 01                                        ; global mutability
+000018b: 01                                        ; global mutability; 01 is mutable
 000018c: 41                                        ; i32.const
 000018d: c09d 04                                   ; i32 literal
 0000190: 0b                                        ; end

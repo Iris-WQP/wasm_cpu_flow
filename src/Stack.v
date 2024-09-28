@@ -5,7 +5,7 @@
         input clk,
         input rst_n,
         input push_num, //0 or 1
-        input [1:0] pop_num, //0~3
+        input [3:0] pop_num, //0~3
         input [`st_width-1:0] push_data,
         output [`pop_num_max*`st_width-1:0] pop_window,
         output stack_full,

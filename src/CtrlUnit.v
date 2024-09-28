@@ -18,7 +18,7 @@ module CtrlUnit(
         
         //to stack
         output reg push_num, //0 or 1
-        output reg [1:0] pop_num, //0~3
+        output reg [3:0] pop_num, //0~15
         //push_select: 0~from ALU; 1~from memory; 2~from instr;
         output reg [1:0] push_select,
          
@@ -35,9 +35,13 @@ module CtrlUnit(
         
         //instants
         output [31:0] constant,
-
+        output hlt,
         output reg instr_finish
     );
+
+    // reg un_hlt;
+    reg jump_hlt;
+    assign hlt = jump_hlt;
 
     reg [1:0] instr_pointer_state;
     parameter   module_head = 2'b00,
@@ -69,19 +73,23 @@ module CtrlUnit(
     reg type_decode; //0~decode parameter; 1~decode return
 
     // function
-    reg [7:0] para_num_reg [7:0];   //parameter number of the function
-    reg [7:0] retu_num_reg [7:0];   //return number of the function
-    reg [7:0] function_num_reg ;     //function number
-    wire [7:0] function_num_left;
+    reg [(`log_pa_re_num_max-1):0] para_num_reg [(`func_num_max-1):0];   //parameter number of the function
+    reg [(`log_pa_re_num_max-1):0] retu_num_reg [(`func_num_max-1):0];   //return number of the function
+    reg [(`log_func_num_max-1):0] function_num_reg ;     //function number
+    wire [(`log_func_num_max-1):0] function_num_left;
     reg [(`instr_read_width-1):0] function_type_list [15:0]; //function type list
     reg [(`instr_log2_bram_depth-1):0] function_addr_list [(`func_num_max-1):0]; //这个list可能不够大
-    reg [7:0] start_function_idx;
-    
-    // //debug
-    // wire[7:0] para_num_reg0 = para_num_reg[0];
-    // wire[7:0] retu_num_reg0 = retu_num_reg[0];
-    // wire[(`instr_read_width-1):0] function_type_list0 = function_type_list[0];
-    
+    reg [(`log_func_num_max-1):0] start_function_idx;
+    wire [2:0] jump_func_head;
+    assign jump_func_head = (para_num_reg[Instr[15:8]]==`log_pa_re_num_max'd0)? 3'd2:3'd4;
+
+    //debug
+    wire [(`instr_log2_bram_depth-1):0] function_addr_list0 = function_addr_list[0];
+    wire [(`instr_log2_bram_depth-1):0] function_addr_list1 = function_addr_list[1];
+
+    //global
+    reg [(`global_width-1):0] global_mem [(`global_num_max-1):0];
+
     assign load_en = (Instr[7:0]==8'h28)&(section_type==8'h0a)&(instr_pointer_state==vector_content);
     assign store_en = (Instr[7:0]==8'h36)&(section_type==8'h0a)&(instr_pointer_state==vector_content);
     assign local_set = ((Instr[7:0]==8'h21)|(Instr[7:0]==8'h22))&(section_type==8'h0a)&(instr_pointer_state==vector_content);
@@ -104,14 +112,14 @@ module CtrlUnit(
         case (instr_pointer_state)
             module_head: begin
                     read_pointer_shift_minusone = 8'd7;
-                    pop_num = 2'd0;
+                    pop_num = 4'd0;
                     push_num = 1'b0;
                     push_select = 2'bZZ;
                     ALUControl = 5'bZZZZZ;                      
                     end
             section_head: begin
                     read_pointer_shift_minusone = {`shift_fill_zero'b0, LEB128_byte_cnt};
-                    pop_num = 2'd0;
+                    pop_num = 4'd0;
                     push_num = 1'b0; 
                     push_select = 2'bZZ;
                     ALUControl = 5'bZZZZZ;                                       
@@ -121,7 +129,7 @@ module CtrlUnit(
                     8'h0a, 8'h01, 8'h03:begin
                     // 8'h0a, 8'h01:begin
                         read_pointer_shift_minusone = {`shift_fill_zero'b0, LEB128_byte_cnt} - 'd1;
-                        pop_num = 2'd0;
+                        pop_num = 4'd0;
                         push_num = 1'b0;
                         push_select = 2'bZZ;
                         ALUControl = 5'bZZZZZ;                          
@@ -129,7 +137,7 @@ module CtrlUnit(
                     default:begin
                         read_pointer_shift_minusone = {section_length - 32'd1};
                         //Warning-WIDTHTRUNC: Operator ASSIGN expects 4 bits on the Assign RHS, but Assign RHS's SUB generates 32 bits.
-                        pop_num = 2'd0;
+                        pop_num = 4'd0;
                         push_num = 1'b0;
                         push_select = 2'bZZ;                        
                         ALUControl = 5'bZZZZZ;                         
@@ -141,7 +149,7 @@ module CtrlUnit(
                         8'h01:begin
                             if(type_decode) begin
                                 read_pointer_shift_minusone = Instr[(`log_read_window_size-1):0] + 'd0;
-                                pop_num = 2'd0;
+                                pop_num = 4'd0;
                                 push_num = 1'b0;
                                 push_select = 2'bZZ;                            
                                 ALUControl = 5'bZZZZZ;                             
@@ -149,7 +157,7 @@ module CtrlUnit(
                             else begin
                                 read_pointer_shift_minusone = Instr[(`log_read_window_size+7):8]+ 'd1;
                                 // read_pointer_shift_minusone = Instr[15:8]+ 'd1;
-                                pop_num = 2'd0;
+                                pop_num = 4'd0;
                                 push_num = 1'b0;
                                 push_select = 2'bZZ;                            
                                 ALUControl = 5'bZZZZZ;                             
@@ -157,7 +165,7 @@ module CtrlUnit(
                         end
                         8'h03:begin
                             read_pointer_shift_minusone = (function_num_flag? function_num_left: `read_window_size) - 1'd1;
-                            pop_num = 2'd0;
+                            pop_num = 4'd0;
                             push_num = 1'b0;
                             push_select = 2'bZZ;                            
                             ALUControl = 5'bZZZZZ;                             
@@ -165,210 +173,219 @@ module CtrlUnit(
                         8'h0a:begin //Code section
                             if(code_pre_read==1'b1)begin
                                 read_pointer_shift_minusone = LEB128_byte_cnt + LEB128_decode - 'd1;
-                                pop_num = 2'd0;
+                                pop_num = 4'd0;
                                 push_num = 1'b0;
                                 push_select = 2'bZZ;
-                                ALUControl = 5'bZZZZZ;                                                                 
+                                ALUControl = 5'bZZZZZ;                                                                
                             end else begin
                                 case (Instr[7:0]) 
                                     8'h01:begin //nop
                                         read_pointer_shift_minusone = `log_read_window_size'd0;
-                                        pop_num = 2'd0;
+                                        pop_num = 4'd0;
                                         ALUControl = 5'bZZZZZ;                                     
                                         push_num = 1'b0;
                                         push_select = 2'bZZ;                                    
                                     end
+                                    8'h10:begin //call
+                                        pop_num = para_num_reg[Instr[15:8]];
+                                        push_num = 1'b0;
+                                        push_select = 2'bZZ;
+                                        ALUControl = 5'bZZZZZ;                                      
+                                        read_pointer_shift_minusone = `log_read_window_size'd0;
+                                        $display("call, addr=%h, pop_num=%d", read_pointer, pop_num);
+                                    end
                                     8'h1a:begin //drop
-                                        pop_num = 2'd1;
+                                        pop_num = 4'd1;
                                         push_num = 1'b0;
                                         push_select = 2'bZZ;                                      
                                         ALUControl = 5'bZZZZZ;                                    
                                         read_pointer_shift_minusone = `log_read_window_size'd0;
                                     end
                                     8'h1b:begin //select
-                                        pop_num = 2'd3;
+                                        pop_num = 4'd3;
                                         push_num = 1'b1;
                                         push_select = 2'b00; //ALU
                                         ALUControl = 5'b00100;
                                         read_pointer_shift_minusone = `log_read_window_size'd0;                                
                                     end
                                     8'h41:begin //i32.const
-                                        pop_num = 2'd0;
+                                        pop_num = 4'd0;
                                         push_num = 1'b1; 
                                         push_select = 2'b10;//Instance_number
                                         ALUControl = 5'bZZZZZ;   
                                         read_pointer_shift_minusone = {`shift_fill_zero'b0, LEB128_byte_cnt};
                                     end
                                     8'h45:begin //i32.eqz
-                                        pop_num = 2'd1;
+                                        pop_num = 4'd1;
                                         push_num = 1'b1;
                                         push_select = 2'b00; //ALU
                                         ALUControl = 5'b00101;    
                                         read_pointer_shift_minusone = `log_read_window_size'd0;                                        
                                     end
                                     8'h46:begin //i32.eq
-                                        pop_num = 2'd2;
+                                        pop_num = 4'd2;
                                         push_num = 1'b1;
                                         push_select = 2'b00; //ALU
                                         ALUControl = 5'b00110;    
                                         read_pointer_shift_minusone = `log_read_window_size'd0;                                  
                                     end
                                     8'h47:begin //i32.ne
-                                        pop_num = 2'd1;
+                                        pop_num = 4'd1;
                                         push_num = 1'b1;
                                         push_select = 2'b00; //ALU
                                         ALUControl = 5'b01111;  
                                         read_pointer_shift_minusone = `log_read_window_size'd0;   
                                     end   
                                     8'h48:begin //i32.lt_s
-                                        pop_num = 2'd2;
+                                        pop_num = 4'd2;
                                         push_num = 1'b1;
                                         push_select = 2'b00; //ALU
                                         ALUControl = 5'b01011;    
                                         read_pointer_shift_minusone = `log_read_window_size'd0;                                  
                                     end          
                                     8'h49:begin //i32.lt_u
-                                        pop_num = 2'd2;
+                                        pop_num = 4'd2;
                                         push_num = 1'b1;
                                         push_select = 2'b00; //ALU
                                         ALUControl = 5'b00111;    
                                         read_pointer_shift_minusone = `log_read_window_size'd0;                                  
                                     end  
                                     8'h4a:begin //i32.gt_s
-                                        pop_num = 2'd2;
+                                        pop_num = 4'd2;
                                         push_num = 1'b1;
                                         push_select = 2'b00; //ALU
                                         ALUControl = 5'b01100;    
                                         read_pointer_shift_minusone = `log_read_window_size'd0;                                  
                                     end        
                                     8'h4b:begin //i32.gt_u
-                                        pop_num = 2'd2;
+                                        pop_num = 4'd2;
                                         push_num = 1'b1;
                                         push_select = 2'b00; //ALU
                                         ALUControl = 5'b01000;    
                                         read_pointer_shift_minusone = `log_read_window_size'd0;                                  
                                     end
                                     8'h4c:begin //i32.le_s
-                                        pop_num = 2'd2;
+                                        pop_num = 4'd2;
                                         push_num = 1'b1;
                                         push_select = 2'b00; //ALU
                                         ALUControl = 5'b01101;    
                                         read_pointer_shift_minusone = `log_read_window_size'd0;                                  
                                     end
                                     8'h4d:begin //i32.le_u
-                                        pop_num = 2'd2;
+                                        pop_num = 4'd2;
                                         push_num = 1'b1;
                                         push_select = 2'b00; //ALU
                                         ALUControl = 5'b01001;    
                                         read_pointer_shift_minusone = `log_read_window_size'd0;                                  
                                     end
                                     8'h4e:begin //i32.ge_s
-                                        pop_num = 2'd2;
+                                        pop_num = 4'd2;
                                         push_num = 1'b1;
                                         push_select = 2'b00; //ALU
                                         ALUControl = 5'b01110;    
                                         read_pointer_shift_minusone = `log_read_window_size'd0;                                  
                                     end
                                     8'h4f:begin //i32.ge_u
-                                        pop_num = 2'd2;
+                                        pop_num = 4'd2;
                                         push_num = 1'b1;
                                         push_select = 2'b00; //ALU
                                         ALUControl = 5'b01010;    
                                         read_pointer_shift_minusone = `log_read_window_size'd0;                                  
                                     end                                                      
                                     8'h6a:begin //i32.add
-                                        pop_num = 2'd2;
+                                        pop_num = 4'd2;
                                         push_num = 1'b1;
                                         push_select = 2'b00; //ALU
+                                        // $display("push_select=%b", push_select);
                                         ALUControl = 5'b00000;    
                                         read_pointer_shift_minusone = `log_read_window_size'd0;   
                                     end   
                                     8'h6b:begin //i32.sub
-                                        pop_num = 2'd2;
+                                        pop_num = 4'd2;
                                         push_num = 1'b1;
                                         push_select = 2'b00; //ALU
                                         ALUControl = 5'b00001;    
                                         read_pointer_shift_minusone = `log_read_window_size'd0; 
                                     end    
                                     8'h71:begin //i32.and
-                                        pop_num = 2'd2;
+                                        pop_num = 4'd2;
                                         push_num = 1'b1;
                                         push_select = 2'b00; //ALU
                                         ALUControl = 5'b00010;    
                                         read_pointer_shift_minusone = `log_read_window_size'd0;                                         
                                     end                 
                                     8'h72:begin //i32.or
-                                        pop_num = 2'd2;
+                                        pop_num = 4'd2;
                                         push_num = 1'b1;
                                         push_select = 2'b00; //ALU
                                         ALUControl = 5'b00011;    
                                         read_pointer_shift_minusone = `log_read_window_size'd0;                                         
                                     end
                                     8'h20:begin //local.get
-                                        pop_num = 2'd0;
+                                        pop_num = 4'd0;
                                         push_num = 1'b1;
                                         push_select = 2'b11; //local mem
                                         ALUControl = 5'b00000; //add
                                         read_pointer_shift_minusone = {`shift_fill_zero'b0, LEB128_byte_cnt};                                         
                                     end                                
                                     8'h21:begin //local.set
-                                        pop_num = 2'd1;
+                                        pop_num = 4'd1;
                                         push_num = 1'b0;
                                         push_select = 2'bZZ;
                                         ALUControl = 5'b00000; //add
                                         read_pointer_shift_minusone = {`shift_fill_zero'b0, LEB128_byte_cnt};                                         
                                     end           
                                     8'h22:begin //local.tee
-                                        pop_num = 2'd0;
+                                        pop_num = 4'd0;
                                         push_num = 1'b0;
                                         push_select = 2'bZZ;
                                         ALUControl = 5'b00000; //add
                                         read_pointer_shift_minusone = {`shift_fill_zero'b0, LEB128_byte_cnt};                                         
                                     end                                                                 
                                     8'h28:begin //i32.load
-                                        pop_num = 2'd1;
+                                        pop_num = 4'd1;
                                         push_num = 1'b1;
                                         push_select = 2'b10; //Memory
                                         ALUControl = 5'b00000; //add
                                         read_pointer_shift_minusone = {`shift_fill_zero'b0, LEB128_byte_cnt} + 'd1;                                         
                                     end                                
                                     8'h36:begin //i32.store
-                                        pop_num = 2'd2;
+                                        pop_num = 4'd2;
                                         push_num = 1'b0;
                                         push_select = 2'bZZ;
                                         ALUControl = 5'b00000; //add
                                         read_pointer_shift_minusone = {`shift_fill_zero'b0, LEB128_byte_cnt} + 'd1;                                         
                                     end             
                                     8'h74:begin //i32.shl
-                                        pop_num = 2'd2;
+                                        pop_num = 4'd2;
                                         push_num = 1'b1;
                                         push_select = 2'b00; //ALU
                                         ALUControl = 5'b10000;    
                                         read_pointer_shift_minusone = `log_read_window_size'd0;                                         
                                     end
                                     8'h75:begin //i32.shr_s
-                                        pop_num = 2'd2;
+                                        pop_num = 4'd2;
                                         push_num = 1'b1;
                                         push_select = 2'b00; //ALU
                                         ALUControl = 5'b10001;    
                                         read_pointer_shift_minusone = `log_read_window_size'd0;                                         
                                     end
                                     8'h76:begin //i32.shr_u
-                                        pop_num = 2'd2;
+                                        pop_num = 4'd2;
                                         push_num = 1'b1;
                                         push_select = 2'b00; //ALU
                                         ALUControl = 5'b10010;    
                                         read_pointer_shift_minusone = `log_read_window_size'd0;                                         
                                     end
                                     8'h77:begin //i32.rotl
-                                        pop_num = 2'd2;
+                                        pop_num = 4'd2;
                                         push_num = 1'b1;
                                         push_select = 2'b00; //ALU
                                         ALUControl = 5'b10011;    
                                         read_pointer_shift_minusone = `log_read_window_size'd0;                                         
                                     end
                                     8'h78:begin //i32.rotr
-                                        pop_num = 2'd2;
+                                        pop_num = 4'd2;
                                         push_num = 1'b1;
                                         push_select = 2'b00; //ALU
                                         ALUControl = 5'b10100;    
@@ -376,7 +393,7 @@ module CtrlUnit(
                                     end  
                                     default:begin
                                         read_pointer_shift_minusone = `log_read_window_size'd0;  
-                                        pop_num = 2'd0;
+                                        pop_num = 4'd0;
                                         push_num = 1'b0;
                                         push_select = 2'bZZ;
                                         ALUControl = 5'bZZZZZ;
@@ -411,6 +428,8 @@ module CtrlUnit(
             jump_en <= 1'b0;
             jump_addr <= 'd0;
             start_function_idx <= 8'd0;
+            jump_hlt <= 1'b0;
+            // un_hlt <= 1'b0;
         end else begin
             case(instr_pointer_state)
                 module_head: begin
@@ -444,19 +463,30 @@ module CtrlUnit(
                         8'h0a:begin //; section "Code" (10)
                             if(code_pre_read==1'b1)begin
                                 if(vector_cnt==vector_num-1)begin
-                                    instr_finish <= 1'b0;
-                                    vector_cnt <= 'd0;
-                                    function_addr_list[vector_cnt] <= read_pointer;
-                                    code_pre_read <= 1'b0;
-                                    jump_en <= 1'b1;
-                                    jump_addr <= function_addr_list[start_function_idx]+'d2;
+                                    if(~jump_hlt) begin
+                                        jump_hlt <= 1'b1;
+                                        function_addr_list[vector_cnt] <= read_pointer;
+                                    end else begin
+                                        code_pre_read <= 1'b0;
+                                        vector_cnt <= 'd0;
+                                        jump_hlt <= 1'b0;
+                                        jump_en <= 1'b1;
+                                        jump_addr <= function_addr_list[start_function_idx]+'d2;                                        
+                                    end
                                 end
                                 else begin
                                     vector_cnt <= vector_cnt + 1'b1;
                                     function_addr_list[vector_cnt] <= read_pointer;
                                 end
                             end else if (code_pre_read==1'b0)begin
-                                if(jump_en) jump_en <= 1'b0;
+                                if(Instr[7:0] == 8'h00) begin //unreachable
+                                    INSTR_ERROR <= 1'b1;
+                                    instr_finish <= 1'b1;
+                                end else if(Instr[7:0] == 8'h10) begin //call, jump to function index
+                                    jump_en <= 1'b1;
+                                    jump_addr <= function_addr_list[Instr[15:8]] + jump_func_head;
+                                end
+                                else if(jump_en) jump_en <= 1'b0;
                                 if(Instr[7:0] == 8'h0b) begin
                                 // if((vector_cnt==(vector_num-1))&(Instr[7:0]==8'h0b)) begin
                                     vector_cnt <= 'd0;

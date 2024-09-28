@@ -29,7 +29,14 @@
 `define log_write_window_size 5
 
 `define shift_fill_zero 1//(`log_read_window_size-3)
-`define pop_num_max 3
+`define pop_num_max `pa_re_num_max
 
 //function
 `define func_num_max 32
+`define log_func_num_max 5
+`define pa_re_num_max 16
+`define log_pa_re_num_max 4
+
+//global
+`define global_width 32
+`define global_num_max 8
