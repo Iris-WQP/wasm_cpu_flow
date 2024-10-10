@@ -10,10 +10,10 @@ module TB_WASM_TOP;
     reg rst_n;
     wire INSTR_ERROR;
     wire instr_finish;
-    wire stack_full;
+    wire o_stack_exceed;
     wire [`instr_log2_bram_depth-1:0] read_pointer;
     wire [31:0] ALUResult;
-    wire stack_empty;
+    wire o_stack_empty_pop;
 
     //generate .vcd
     initial
@@ -34,9 +34,9 @@ module TB_WASM_TOP;
         .i_clk(clk),
         .i_rst_n(rst_n),
         .o_INSTR_ERROR(INSTR_ERROR),
-        .o_instr_finish(instr_finish),
-        .o_stack_full(stack_full)
-        
+        .o_stack_exceed(o_stack_exceed),
+        .o_stack_empty_pop(o_stack_empty_pop),
+        .o_instr_finish(instr_finish)
         // //debug
         // ,
         // .read_pointer(read_pointer),

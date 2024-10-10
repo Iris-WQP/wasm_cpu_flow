@@ -4,7 +4,7 @@
 `include "src/InstrMemCtrl.v"
 `include "src/LineMemory.v"
 `include "src/ALU.v"
-`include "src/Stack.v"
+`include "src/StackExtend.v"
 `include "src/local_mem.v"
 // `include "src/VariableMemory.v"
 
@@ -15,9 +15,9 @@ module WASM_TOP(
 
         //three error signals
         output o_INSTR_ERROR,
-        output o_instr_finish,
-        output o_stack_full
-        
+        output o_stack_exceed,
+        output o_stack_empty_pop,
+        output o_instr_finish
         // //debug
         // ,
         // output [`instr_log2_bram_depth-1:0] read_pointer,
@@ -127,28 +127,30 @@ InstrMemCtrl #
                 );      
 
     //ALU
-    wire [`st_width-1:0] A_store_data = pop_window[`st_width-1:0];
-    wire [`st_width-1:0] B_offset = (store_en|load_en)? constant:
-                                    ((local_set|local_get)? `st_width'd0:pop_window[`st_width*2-1:`st_width]);
-    wire [`st_width-1:0] C = pop_window[`st_width*3-1:`st_width*2];
+    wire [`st_width-1:0] A_store_data;    
+    wire [`st_width-1:0] B_pop_window;    
+    wire [`st_width-1:0] C_pop_window;
+    wire [`st_width-1:0] B_offset = (store_en|load_en)? constant: ((local_set|local_get)? `st_width'd0:B_pop_window);
     
     ALU u_alu(
     .A(A_store_data),
     .B(B_offset),
-    .C(C),
+    .C(C_pop_window),
     .ALUControl(ALUControl),
     .ALUResult(ALUResult)
     );      
 
-    Stack u_stack (
+    StackExtend u_stack_extend (
         .clk(i_clk),
         .rst_n(i_rst_n),
         .push_num(push_num),
         .push_data(push_data),
         .pop_num(pop_num),
-        .stack_full(o_stack_full),
-        .stack_empty(stack_empty),
-        .pop_window(pop_window)
+        .stack_exceed_push(o_stack_exceed),
+        .stack_exceed_pop(o_stack_empty_pop),
+        .pop_window_A(A_store_data),
+        .pop_window_B(B_pop_window),
+        .pop_window_C(C_pop_window)
     );
 
     LineMemory #(`log2_bram_depth_in,

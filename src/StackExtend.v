@@ -13,46 +13,37 @@
         output [`st_width-1:0] pop_window_B,
         output [`st_width-1:0] pop_window_C,
 
-        output stack_full,
-        output stack_empty
+        output stack_exceed_pop,
+        output stack_exceed_push
     );
     
-    //reg stack
-    reg [`st_width-1:0] reg_stack [`st_depth-1:0];
-    reg [`st_log2_depth-1:0] top_pointer;
-    wire [`st_log2_depth-1:0] top_after_pop;
-    wire [`st_log2_depth-1:0] top_after_push;
+    reg [`st_width-1:0] extend_stack [`st_depth-1:0];
+    reg [`st_log2_depth:0] top_pointer;
+    wire [`st_log2_depth:0] top_after_pop;
+    wire [`st_log2_depth:0] top_after_push;
+    assign stack_exceed_pop = top_pointer < pop_num;
+    assign stack_exceed_push = (top_after_pop + push_num) > `st_depth;
+    assign top_after_pop = stack_exceed_pop? 'd0 : (top_pointer - pop_num);
+    assign top_after_push = stack_exceed_push? `st_depth : (top_after_pop + push_num);
+    
+    assign pop_window_A = (top_pointer < 'd1)? `st_width'dZ : extend_stack[top_pointer-'d1];
+    assign pop_window_B = (top_pointer < 'd2)? `st_width'dZ : extend_stack[top_pointer-'d2];
+    assign pop_window_C = (top_pointer < 'd3)? `st_width'dZ : extend_stack[top_pointer-'d3];
 
-    //local memory stack
-    reg [`st_width-1:0] local_stack [`st_depth-1:0];
-
-    
-    assign stack_full = (pointer == `st_depth_mius_1);
-    assign stack_empty = (pointer == 'd0);
-
-    assign pop_window = stack_reg[`pop_num_max*`st_width-1:0];
-    
-    assign stack_reg_after_pop = stack_reg>>(pop_num*`st_width);
-    wire [(`st_width+`st_depth*`st_width-1):0] push_mid_state;
-    assign push_mid_state =  push_num? {stack_reg_after_pop, push_data}:{{`st_width{1'b0}}, stack_reg_after_pop};
-    assign stack_reg_after_push = push_mid_state[`st_depth*`st_width-1:0];
-    
-    assign pointer_after_pop = (pointer > pop_num) ? (pointer-pop_num) : 'd0;
-    assign pointer_after_push = push_num?((pointer_after_pop < (`st_depth-1))? (pointer_after_pop+1) : (`st_depth-1)):pointer_after_pop;
-    
     always@(posedge clk or negedge rst_n)begin 
         if(~rst_n)begin
-            stack_reg <= 'd0;
-            pointer <= 'd0;
+            top_pointer <= 'd0;
         end else begin
-                stack_reg <= stack_reg_after_push;
-          
-          
-          
-          
-                pointer <= pointer_after_push;
+                top_pointer <= top_after_push;
+                if (push_num) begin
+                    extend_stack[top_after_pop] <= push_data;
+                end
         end
     end
+
+
+    
+
 endmodule
 
 //another choice: push first--posedge; pop next--negedge
