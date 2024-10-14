@@ -36,7 +36,15 @@ module CtrlUnit(
         //instants
         output [31:0] constant,
         output hlt,
-        output reg instr_finish
+        output reg instr_finish,
+
+        //to call stack
+        input [`instr_log2_bram_depth-1:0] return_addr_tag,
+        input control_stack_empty,
+        output function_call,
+        output function_retu_num,  //0 or 1
+        output [(`log_pa_re_num_max-1):0] function_para_num,
+        output [7:0] allocate_local_memory_size
     );
 
     // reg un_hlt;
@@ -52,8 +60,7 @@ module CtrlUnit(
     //variables
     reg [`bram_in_width-1:0]global_variables[`bram_depth_in-1:0];
     reg [`instr_bram_width-1:0] global_var_type [`bram_depth_in-1:0];
-    reg [`bram_in_width-1:0]local_variables[`bram_depth_in-1:0];
-    
+
     //byte count decode
     wire [35:0] LEB128_in;
     wire [31:0] LEB128_decode;
@@ -73,15 +80,15 @@ module CtrlUnit(
     reg type_decode; //0~decode parameter; 1~decode return
 
     // function
+    reg [7:0] local_memory_sizes_list [(`func_num_max-1):0]; //local memory size list
     reg [(`log_pa_re_num_max-1):0] para_num_reg [(`func_num_max-1):0];   //parameter number of the function
-    reg [(`log_pa_re_num_max-1):0] retu_num_reg [(`func_num_max-1):0];   //return number of the function
+    reg [(`func_num_max-1):0] retu_num_reg;   //return number of the function, 0 or 1.
     reg [(`log_func_num_max-1):0] function_num_reg ;     //function number
     wire [(`log_func_num_max-1):0] function_num_left;
     reg [(`instr_read_width-1):0] function_type_list [15:0]; //function type list
     reg [(`instr_log2_bram_depth-1):0] function_addr_list [(`func_num_max-1):0]; //这个list可能不够大
     reg [(`log_func_num_max-1):0] start_function_idx;
-    wire [2:0] jump_func_head;
-    assign jump_func_head = (para_num_reg[Instr[15:8]]==`log_pa_re_num_max'd0)? 3'd2:3'd4;
+    assign allocate_local_memory_size =  function_content_start?  local_memory_sizes_list[start_function_idx] : local_memory_sizes_list[Instr[15:8]];
 
     //debug
     wire [(`instr_log2_bram_depth-1):0] function_addr_list0 = function_addr_list[0];
@@ -95,7 +102,7 @@ module CtrlUnit(
     assign local_set = ((Instr[7:0]==8'h21)|(Instr[7:0]==8'h22))&(section_type==8'h0a)&(instr_pointer_state==vector_content);
     assign local_get = (Instr[7:0]==8'h20)&(section_type==8'h0a)&(instr_pointer_state==vector_content);
     
-    assign LEB128_in = ((instr_pointer_state==vector_head)|code_pre_read)? Instr[35:0]:Instr[43:8];
+    assign LEB128_in = ((instr_pointer_state==vector_head)|(|code_pre_read_state))? Instr[35:0]:Instr[43:8];
     assign constant = LEB128_decode;
     LEB128_uint32_decode u_decode(
             .LEB128_in(LEB128_in),
@@ -107,6 +114,23 @@ module CtrlUnit(
     assign function_num_left = function_num_reg - `read_window_size*function_store_addr;
     assign function_num_flag = (function_num_left < `read_window_size);
     
+    //to call stack
+    assign function_call = ((instr_pointer_state==vector_content)&(section_type==8'h0a)&(~(|code_pre_read_state))&(Instr[7:0]==8'h10))|(function_content_start);
+    assign function_retu_num = retu_num_reg[Instr[15:8]];
+    assign function_para_num = para_num_reg[Instr[15:8]];
+
+    //local
+    reg [2:0] local_decl_num;
+    reg [2:0] local_decl_count;
+
+    /*four states of code section: 
+     01 ~ read length; 
+     10 ~ read local decl count; 
+     11 ~ read local type count;
+     00 ~ normal-read;
+     */
+    reg [1:0] code_pre_read_state;
+
     //read_pointer_shift logic          
     always@(*) begin
         case (instr_pointer_state)
@@ -171,12 +195,24 @@ module CtrlUnit(
                             ALUControl = 5'bZZZZZ;                             
                         end                     
                         8'h0a:begin //Code section
-                            if(code_pre_read==1'b1)begin
+                            if(code_pre_read_state==2'b01)begin
+                                read_pointer_shift_minusone = LEB128_byte_cnt - 'd1;
+                                pop_num = 4'd0;
+                                push_num = 1'b0;
+                                push_select = 2'bZZ;
+                                ALUControl = 5'bZZZZZ;   
+                            end else if(code_pre_read_state==2'b10)begin
+                                read_pointer_shift_minusone = LEB128_byte_cnt - 'd1;
+                                pop_num = 4'd0;
+                                push_num = 1'b0;
+                                push_select = 2'bZZ;
+                                ALUControl = 5'bZZZZZ;   
+                            end else if(code_pre_read_state==2'b11)begin
                                 read_pointer_shift_minusone = LEB128_byte_cnt + LEB128_decode - 'd1;
                                 pop_num = 4'd0;
                                 push_num = 1'b0;
                                 push_select = 2'bZZ;
-                                ALUControl = 5'bZZZZZ;                                                                
+                                ALUControl = 5'bZZZZZ;                                                                                                                                
                             end else begin
                                 case (Instr[7:0]) 
                                     8'h01:begin //nop
@@ -391,6 +427,13 @@ module CtrlUnit(
                                         ALUControl = 5'b10100;    
                                         read_pointer_shift_minusone = `log_read_window_size'd0;                                         
                                     end  
+                                    // 8'h0b:begin //end, temp for function end
+                                    //     pop_num = 4'd2;
+                                    //     push_num = 1'b1;
+                                    //     push_select = 2'b00; //ALU
+                                    //     ALUControl = 5'b10100;    
+                                    //     read_pointer_shift_minusone = `log_read_window_size'd0;                                         
+                                    // end                                      
                                     default:begin
                                         read_pointer_shift_minusone = `log_read_window_size'd0;  
                                         pop_num = 4'd0;
@@ -409,10 +452,9 @@ module CtrlUnit(
         endcase
     end
 
-     //two states of code section: 1~pre-read; 0~normal-read;
-    reg code_pre_read;
 
     reg [3:0] function_store_addr;
+    reg function_content_start;
     always@(posedge clk or negedge rst_n) begin
         if(~rst_n) begin
             instr_pointer_state <= module_head;
@@ -424,11 +466,13 @@ module CtrlUnit(
             vector_cnt <= 'd0;
             instr_finish <= 1'b0;
             function_store_addr <= 4'd0;
-            code_pre_read <= 1'd0;
+            code_pre_read_state <= 2'd0;
             jump_en <= 1'b0;
             jump_addr <= 'd0;
             start_function_idx <= 8'd0;
             jump_hlt <= 1'b0;
+            local_decl_count <= 2'd0;
+            function_content_start <= 1'b0;
             // un_hlt <= 1'b0;
         end else begin
             case(instr_pointer_state)
@@ -453,7 +497,7 @@ module CtrlUnit(
                         instr_pointer_state <= section_head;                        
                     end else if (section_type==8'h0a) begin
                         instr_pointer_state <= vector_content;
-                        code_pre_read <= 1'd1;
+                        code_pre_read_state <= 2'b01;
                     end else begin
                         instr_pointer_state <= section_head;
                     end
@@ -461,48 +505,59 @@ module CtrlUnit(
                 vector_content: begin
                     case (section_type)
                         8'h0a:begin //; section "Code" (10)
-                            if(code_pre_read==1'b1)begin
-                                if(vector_cnt==vector_num-1)begin
-                                    if(~jump_hlt) begin
-                                        jump_hlt <= 1'b1;
-                                        function_addr_list[vector_cnt] <= read_pointer;
-                                    end else begin
-                                        code_pre_read <= 1'b0;
-                                        vector_cnt <= 'd0;
-                                        jump_hlt <= 1'b0;
-                                        jump_en <= 1'b1;
-                                        jump_addr <= function_addr_list[start_function_idx]+'d2;                                        
-                                    end
-                                end
-                                else begin
-                                    vector_cnt <= vector_cnt + 1'b1;
+                            if(code_pre_read_state==2'b01)begin
+                                function_addr_list[vector_cnt + 1'b1] <= read_pointer + LEB128_byte_cnt + LEB128_decode;
+                                code_pre_read_state <= 2'b10;
+                                local_memory_sizes_list[vector_cnt] <= 'd0;
+                            end else if(code_pre_read_state==2'b10)begin
+                                local_decl_num <= Instr[2:0];
+                                code_pre_read_state <= 2'b11;
+                            end else if(code_pre_read_state==2'b11)begin
+                                if(local_decl_count==local_decl_num)begin
                                     function_addr_list[vector_cnt] <= read_pointer;
+                                    if(vector_cnt==(vector_num-1))begin
+                                        vector_cnt <= 'd0;
+                                        code_pre_read_state <= 2'b00;
+                                        function_content_start <= 1'b1;
+                                        if(start_function_idx == vector_cnt) begin
+                                            jump_en <= 1'b1;
+                                            jump_addr <= read_pointer;
+                                        end else begin
+                                            jump_en <= 1'b1;
+                                            jump_addr <= function_addr_list[start_function_idx];
+                                        end
+                                    end else begin
+                                        vector_cnt <= vector_cnt + 1'b1;
+                                        code_pre_read_state <= 2'b01;
+                                        jump_en <= 1'b1;
+                                        jump_addr <= function_addr_list[vector_cnt + 1'b1];
+                                    end
+                                end else begin
+                                    local_decl_count <= local_decl_count + 1'b1;
+                                    local_memory_sizes_list[vector_cnt] <= local_memory_sizes_list[vector_cnt]+LEB128_decode;
                                 end
-                            end else if (code_pre_read==1'b0)begin
+                            end else begin //if (code_pre_read==2'b00)
+                                function_content_start <= 1'b0;
                                 if(Instr[7:0] == 8'h00) begin //unreachable
                                     INSTR_ERROR <= 1'b1;
                                     instr_finish <= 1'b1;
                                 end else if(Instr[7:0] == 8'h10) begin //call, jump to function index
                                     jump_en <= 1'b1;
-                                    jump_addr <= function_addr_list[Instr[15:8]] + jump_func_head;
-                                end
-                                else if(jump_en) jump_en <= 1'b0;
-                                if(Instr[7:0] == 8'h0b) begin
-                                // if((vector_cnt==(vector_num-1))&(Instr[7:0]==8'h0b)) begin
-                                    vector_cnt <= 'd0;
-                                    instr_pointer_state <= section_head;
-                                    instr_finish <= 1'b1;
-                                end
-                                else begin 
-                                    vector_cnt <= vector_cnt + 'd1;
-                                    // instr_pointer_state <= vector_content;
-                                end
+                                    jump_addr <= function_addr_list[Instr[15:8]];
+                                end else if(Instr[7:0] == 8'h0b) begin //end, temp for function end
+                                    if(control_stack_empty)begin
+                                        instr_finish <= 1'b1;
+                                    end else begin 
+                                        jump_en <= 1'b1;
+                                        jump_addr <= return_addr_tag;
+                                    end
+                                end else if(jump_en) jump_en <= 1'b0;
                             end
                         end
                         8'h01:begin //; section "Type" (1)
                             if(type_decode) begin
                                 type_decode <= 1'b0;
-                                retu_num_reg[vector_cnt] <= Instr[7:0];
+                                retu_num_reg[vector_cnt] <= Instr[0];
                                 if(vector_cnt==(vector_num-1)) begin
                                     vector_cnt <= 'd0;
                                     instr_pointer_state <= section_head;

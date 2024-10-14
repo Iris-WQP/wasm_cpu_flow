@@ -37,6 +37,12 @@
 `define pa_re_num_max 16
 `define log_pa_re_num_max 4
 
+//call stack
+//frame_type+retu_num+st_tag+instr_tag        
+`define call_stack_width (3+`st_log2_depth+`instr_log2_bram_depth) 
+`define call_stack_depth 8
+`define log_call_stack_depth 3
+
 //global
 `define global_width 32
 `define global_num_max 8

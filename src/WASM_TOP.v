@@ -4,8 +4,8 @@
 `include "src/InstrMemCtrl.v"
 `include "src/LineMemory.v"
 `include "src/ALU.v"
-`include "src/StackExtend.v"
-`include "src/local_mem.v"
+`include "src/OperandStack.v"
+`include "src/ControlStack.v"
 // `include "src/VariableMemory.v"
 
 module WASM_TOP(
@@ -48,7 +48,7 @@ module WASM_TOP(
 
     //line memory
     wire [`bram_in_width-1:0] load_data;
-    wire [`bram_in_width-1:0] local_mem_data;
+    wire [`st_width-1:0] local_mem_data;
     wire load_vld;
     //stack
     wire push_num;
@@ -63,8 +63,37 @@ module WASM_TOP(
             2'b11: push_data = local_mem_data;//for local/global memory
         endcase
     end
+
+    //call stack
+    wire control_stack_empty;   //judge if the module is about to finish
+    wire function_call; //instruction is call, jump, call stack push
+    wire function_return; //a function is finished, jump back, call stack pop
+    wire function_retu_num; //return parameter number, 0 or 1
+    wire [`call_stack_width-1:0] control_stack_push_data;
+    wire [`call_stack_width-1:0] control_stack_top_data;
+    wire [`st_log2_depth:0] operand_stack_top_pointer;
+    wire [`st_log2_depth:0] stack_pointer_tag;
+    wire [(`log_pa_re_num_max-1):0] function_para_num;
+    wire [7:0] allocate_local_memory_size;
+    wire [`st_log2_depth-1:0] function_stack_tag;
+    wire [`instr_log2_bram_depth-1:0] return_addr_tag;
+
+    assign function_stack_tag = control_stack_push_data[(`st_log2_depth+`instr_log2_bram_depth-1):`instr_log2_bram_depth];
+    assign return_addr_tag = control_stack_push_data[`instr_log2_bram_depth-1:0];
+
+    //temp
+    assign control_stack_push_data = {2'b01, function_retu_num, stack_pointer_tag, read_pointer};
+    assign stack_pointer_tag = operand_stack_top_pointer - function_para_num;
     
-    
+    ControlStack u_control_stack(
+        .clk(i_clk),
+        .rst_n(i_rst_n),
+        .push(function_call),
+        .pop(function_return),
+        .push_data(control_stack_push_data),
+        .top_data(control_stack_top_data),
+        .control_stack_empty(control_stack_empty)
+    );
     
     CtrlUnit u_ctrl_unit (
         .clk(i_clk),
@@ -87,7 +116,13 @@ module WASM_TOP(
         .local_get(local_get),
         .constant(constant),
         .hlt(hlt),
-        .instr_finish(o_instr_finish)
+        .instr_finish(o_instr_finish),
+        .return_addr_tag(return_addr_tag),
+        .control_stack_empty(control_stack_empty),
+        .function_call(function_call),
+        .function_retu_num(function_retu_num),
+        .function_para_num(function_para_num),
+        .allocate_local_memory_size(allocate_local_memory_size)
     );
 
 //depends on instr write method, useless for now.
@@ -126,21 +161,26 @@ InstrMemCtrl #
         //         .write_pointer(write_pointer)
                 );      
 
-    //ALU
-    wire [`st_width-1:0] A_store_data;    
+    //operand stack window
+    wire [`st_width-1:0] A_pop_window;
     wire [`st_width-1:0] B_pop_window;    
-    wire [`st_width-1:0] C_pop_window;
-    wire [`st_width-1:0] B_offset = (store_en|load_en)? constant: ((local_set|local_get)? `st_width'd0:B_pop_window);
-    
+    wire [`st_width-1:0] C_pop_window;   
+
+    //ALU operands 
+    wire [`st_width-1:0] A_ALU;
+    wire [`st_width-1:0] B_ALU;
+    assign A_ALU = (store_en|load_en|local_set|local_get)? constant : A_pop_window;    
+    assign B_ALU = (local_set|local_get)? function_stack_tag:B_pop_window;
+
     ALU u_alu(
-    .A(A_store_data),
-    .B(B_offset),
+    .A(A_ALU),
+    .B(B_ALU),
     .C(C_pop_window),
     .ALUControl(ALUControl),
     .ALUResult(ALUResult)
     );      
 
-    StackExtend u_stack_extend (
+    OperandStack u_operand_stack (
         .clk(i_clk),
         .rst_n(i_rst_n),
         .push_num(push_num),
@@ -148,9 +188,17 @@ InstrMemCtrl #
         .pop_num(pop_num),
         .stack_exceed_push(o_stack_exceed),
         .stack_exceed_pop(o_stack_empty_pop),
-        .pop_window_A(A_store_data),
+        .pop_window_A(A_pop_window),
         .pop_window_B(B_pop_window),
-        .pop_window_C(C_pop_window)
+        .pop_window_C(C_pop_window),
+        .call(function_call),
+        .w_top_pointer(operand_stack_top_pointer),
+        .allocate_local_memory_size(allocate_local_memory_size),
+
+        .l_addr(ALUResult),
+        .local_set(local_set),
+        .local_set_data(A_pop_window),
+        .local_get_data(local_mem_data)
     );
 
     LineMemory #(`log2_bram_depth_in,
@@ -163,19 +211,7 @@ InstrMemCtrl #
     .rd_data(load_data),
     .rd_data_vld(load_vld),
     .we(store_en),
-    .wr_data(A_store_data)
+    .wr_data(A_pop_window)
 );
-
-    local_mem #(`log2_bram_depth_in,
-                 `bram_in_width,
-                 `bram_depth_in) 
-    u_local_mem 
-    (
-        .clk(i_clk),
-        .addr(constant),        
-        .we(local_set),
-        .wr_data(A_store_data),
-        .rd_data(local_mem_data)
-    );
 
 endmodule

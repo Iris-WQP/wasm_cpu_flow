@@ -17,6 +17,7 @@
   (type $t15 (func (param i64 i32) (result i32)))
   (type $t16 (func (param i32 i32 i32 i32 i32)))
   (type $t17 (func (param i32 i32)))
+  (start $_start)
   (import "wasi_snapshot_preview1" "args_sizes_get" (func $wasi_snapshot_preview1.args_sizes_get (type $t4)))
   (import "wasi_snapshot_preview1" "args_get" (func $wasi_snapshot_preview1.args_get (type $t4)))
   (import "wasi_snapshot_preview1" "proc_exit" (func $wasi_snapshot_preview1.proc_exit (type $t2)))

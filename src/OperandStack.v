@@ -1,7 +1,7 @@
 // `timescale 1ns / 1ps
 `include "src/wasm_defines.vh"
 /*reg stack, local memory stack, and control stack*/ 
- module StackExtend(   
+ module OperandStack(   
         input clk,
         input rst_n,
         input push_num, //0 or 1
@@ -14,35 +14,49 @@
         output [`st_width-1:0] pop_window_C,
 
         output stack_exceed_pop,
-        output stack_exceed_push
+        output stack_exceed_push,
+
+        //control stack
+        input call,
+        input [7:0] allocate_local_memory_size,
+        output [`st_log2_depth:0] w_top_pointer,
+
+        //local memory stack
+        input [`st_log2_depth:0] l_addr,
+        input local_set,
+        input [`st_width-1:0] local_set_data,
+        output [`st_width-1:0] local_get_data
     );
     
+    //operand stack
     reg [`st_width-1:0] extend_stack [`st_depth-1:0];
     reg [`st_log2_depth:0] top_pointer;
     wire [`st_log2_depth:0] top_after_pop;
     wire [`st_log2_depth:0] top_after_push;
+    assign w_top_pointer = top_pointer;
     assign stack_exceed_pop = top_pointer < pop_num;
     assign stack_exceed_push = (top_after_pop + push_num) > `st_depth;
     assign top_after_pop = stack_exceed_pop? 'd0 : (top_pointer - pop_num);
-    assign top_after_push = stack_exceed_push? `st_depth : (top_after_pop + push_num);
+    assign top_after_push = top_after_pop + (call?allocate_local_memory_size:push_num);
     
     assign pop_window_A = (top_pointer < 'd1)? `st_width'dZ : extend_stack[top_pointer-'d1];
     assign pop_window_B = (top_pointer < 'd2)? `st_width'dZ : extend_stack[top_pointer-'d2];
     assign pop_window_C = (top_pointer < 'd3)? `st_width'dZ : extend_stack[top_pointer-'d3];
+    
+    assign local_get_data = extend_stack[l_addr];
 
-    always@(posedge clk or negedge rst_n)begin 
+    always@(posedge clk or negedge rst_n)begin
         if(~rst_n)begin
             top_pointer <= 'd0;
         end else begin
                 top_pointer <= top_after_push;
-                if (push_num) begin
+                if(local_set)begin
+                    extend_stack[l_addr] <= local_set_data;
+                end else if (push_num) begin
                     extend_stack[top_after_pop] <= push_data;
                 end
         end
     end
-
-
-    
 
 endmodule
 
