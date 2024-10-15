@@ -38,13 +38,16 @@ module CtrlUnit(
         output hlt,
         output reg instr_finish,
 
-        //to call stack
+        //to call stack (control stack)
         input [`instr_log2_bram_depth-1:0] return_addr_tag,
-        input control_stack_empty,
+        input control_stack_left_one,
         output function_call,
+        output function_return,
         output function_retu_num,  //0 or 1
         output [(`log_pa_re_num_max-1):0] function_para_num,
-        output [7:0] allocate_local_memory_size
+        output [7:0] allocate_local_memory_size,
+        output [2:0] LEB128_byte_cnt,
+        output [(`instr_log2_bram_depth-1):0] pre_calu_return_addr
     );
 
     // reg un_hlt;
@@ -64,7 +67,7 @@ module CtrlUnit(
     //byte count decode
     wire [35:0] LEB128_in;
     wire [31:0] LEB128_decode;
-    wire [2:0] LEB128_byte_cnt;
+    // wire [2:0] LEB128_byte_cnt;
     
     //section head
     reg [7:0] section_type;
@@ -89,18 +92,21 @@ module CtrlUnit(
     reg [(`instr_log2_bram_depth-1):0] function_addr_list [(`func_num_max-1):0]; //这个list可能不够大
     reg [(`log_func_num_max-1):0] start_function_idx;
     assign allocate_local_memory_size =  function_content_start?  local_memory_sizes_list[start_function_idx] : local_memory_sizes_list[Instr[15:8]];
+    wire [`instr_log2_bram_depth-1:0] pre_calu_return_addr = function_content_start? 'd0 : read_pointer+LEB128_byte_cnt+1'd1;
 
     //debug
     wire [(`instr_log2_bram_depth-1):0] function_addr_list0 = function_addr_list[0];
     wire [(`instr_log2_bram_depth-1):0] function_addr_list1 = function_addr_list[1];
+    wire [7:0] local_memory_sizes_list_0 = local_memory_sizes_list[0];
+    wire [7:0] local_memory_sizes_list_1 = local_memory_sizes_list[1];
 
     //global
     reg [(`global_width-1):0] global_mem [(`global_num_max-1):0];
 
-    assign load_en = (Instr[7:0]==8'h28)&(section_type==8'h0a)&(instr_pointer_state==vector_content);
-    assign store_en = (Instr[7:0]==8'h36)&(section_type==8'h0a)&(instr_pointer_state==vector_content);
-    assign local_set = ((Instr[7:0]==8'h21)|(Instr[7:0]==8'h22))&(section_type==8'h0a)&(instr_pointer_state==vector_content);
-    assign local_get = (Instr[7:0]==8'h20)&(section_type==8'h0a)&(instr_pointer_state==vector_content);
+    assign load_en = (Instr[7:0]==8'h28)&(section_type==8'h0a)&(instr_pointer_state==vector_content)&(code_pre_read_state==2'b00);
+    assign store_en = (Instr[7:0]==8'h36)&(section_type==8'h0a)&(instr_pointer_state==vector_content)&(code_pre_read_state==2'b00);
+    assign local_set = ((Instr[7:0]==8'h21)|(Instr[7:0]==8'h22))&(section_type==8'h0a)&(instr_pointer_state==vector_content)&(code_pre_read_state==2'b00);
+    assign local_get = (Instr[7:0]==8'h20)&(section_type==8'h0a)&(instr_pointer_state==vector_content)&(code_pre_read_state==2'b00);
     
     assign LEB128_in = ((instr_pointer_state==vector_head)|(|code_pre_read_state))? Instr[35:0]:Instr[43:8];
     assign constant = LEB128_decode;
@@ -114,10 +120,11 @@ module CtrlUnit(
     assign function_num_left = function_num_reg - `read_window_size*function_store_addr;
     assign function_num_flag = (function_num_left < `read_window_size);
     
-    //to call stack
+    //to call stack (control stack)
     assign function_call = ((instr_pointer_state==vector_content)&(section_type==8'h0a)&(~(|code_pre_read_state))&(Instr[7:0]==8'h10))|(function_content_start);
-    assign function_retu_num = retu_num_reg[Instr[15:8]];
-    assign function_para_num = para_num_reg[Instr[15:8]];
+    assign function_return = ((instr_pointer_state==vector_content)&(section_type==8'h0a)&(~(|code_pre_read_state))&(Instr[7:0]==8'h0b));
+    assign function_retu_num = function_content_start? 'b0:retu_num_reg[Instr[15:8]];
+    assign function_para_num = function_content_start? 'b0:para_num_reg[Instr[15:8]];
 
     //local
     reg [2:0] local_decl_num;
@@ -223,7 +230,7 @@ module CtrlUnit(
                                         push_select = 2'bZZ;                                    
                                     end
                                     8'h10:begin //call
-                                        pop_num = para_num_reg[Instr[15:8]];
+                                        pop_num = 4'd0;
                                         push_num = 1'b0;
                                         push_select = 2'bZZ;
                                         ALUControl = 5'bZZZZZ;                                      
@@ -427,13 +434,13 @@ module CtrlUnit(
                                         ALUControl = 5'b10100;    
                                         read_pointer_shift_minusone = `log_read_window_size'd0;                                         
                                     end  
-                                    // 8'h0b:begin //end, temp for function end
-                                    //     pop_num = 4'd2;
-                                    //     push_num = 1'b1;
-                                    //     push_select = 2'b00; //ALU
-                                    //     ALUControl = 5'b10100;    
-                                    //     read_pointer_shift_minusone = `log_read_window_size'd0;                                         
-                                    // end                                      
+                                    8'h0b:begin //end, temp for function end
+                                        pop_num = 4'd0;
+                                        push_num = 1'b1;
+                                        push_select = 2'b00; //ALU
+                                        ALUControl = 5'b00000;    
+                                        read_pointer_shift_minusone = `log_read_window_size'd0;                                         
+                                    end                                      
                                     default:begin
                                         read_pointer_shift_minusone = `log_read_window_size'd0;  
                                         pop_num = 4'd0;
@@ -472,6 +479,7 @@ module CtrlUnit(
             start_function_idx <= 8'd0;
             jump_hlt <= 1'b0;
             local_decl_count <= 2'd0;
+            local_decl_num <= 2'd0;            
             function_content_start <= 1'b0;
             // un_hlt <= 1'b0;
         end else begin
@@ -509,27 +517,26 @@ module CtrlUnit(
                                 function_addr_list[vector_cnt + 1'b1] <= read_pointer + LEB128_byte_cnt + LEB128_decode;
                                 code_pre_read_state <= 2'b10;
                                 local_memory_sizes_list[vector_cnt] <= 'd0;
+                                jump_en <= 1'b0;
                             end else if(code_pre_read_state==2'b10)begin
                                 local_decl_num <= Instr[2:0];
                                 code_pre_read_state <= 2'b11;
                             end else if(code_pre_read_state==2'b11)begin
                                 if(local_decl_count==local_decl_num)begin
                                     function_addr_list[vector_cnt] <= read_pointer;
+                                    jump_en <= 1'b1;                                        
                                     if(vector_cnt==(vector_num-1))begin
                                         vector_cnt <= 'd0;
                                         code_pre_read_state <= 2'b00;
                                         function_content_start <= 1'b1;
                                         if(start_function_idx == vector_cnt) begin
-                                            jump_en <= 1'b1;
                                             jump_addr <= read_pointer;
                                         end else begin
-                                            jump_en <= 1'b1;
                                             jump_addr <= function_addr_list[start_function_idx];
                                         end
                                     end else begin
                                         vector_cnt <= vector_cnt + 1'b1;
                                         code_pre_read_state <= 2'b01;
-                                        jump_en <= 1'b1;
                                         jump_addr <= function_addr_list[vector_cnt + 1'b1];
                                     end
                                 end else begin
@@ -545,7 +552,7 @@ module CtrlUnit(
                                     jump_en <= 1'b1;
                                     jump_addr <= function_addr_list[Instr[15:8]];
                                 end else if(Instr[7:0] == 8'h0b) begin //end, temp for function end
-                                    if(control_stack_empty)begin
+                                    if(control_stack_left_one)begin
                                         instr_finish <= 1'b1;
                                     end else begin 
                                         jump_en <= 1'b1;

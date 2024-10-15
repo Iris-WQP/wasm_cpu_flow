@@ -39,7 +39,7 @@
 
 //call stack
 //frame_type+retu_num+st_tag+instr_tag        
-`define call_stack_width (3+`st_log2_depth+`instr_log2_bram_depth) 
+`define call_stack_width 15  //(3+`st_log2_depth+`instr_log2_bram_depth) 3+4+8=15
 `define call_stack_depth 8
 `define log_call_stack_depth 3
 
