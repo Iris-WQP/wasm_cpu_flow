@@ -13,12 +13,12 @@ module CtrlUnit(
         output reg [7:0] read_pointer_shift_minusone,
         output reg shift_vld,       //temporary useless
         output reg INSTR_ERROR,
-        output reg jump_en,
+        output jump_en_out,
         output reg [(`instr_log2_bram_depth-1):0] jump_addr,
         
         //to stack
-        output reg push_num, //0 or 1
-        output reg [3:0] pop_num, //0~15
+        output push_num_out, //0 or 1
+        output [3:0] pop_num_out, //0~15
         //push_select: 0~from ALU; 1~from memory; 2~from instr;
         output reg [1:0] push_select,
          
@@ -45,6 +45,7 @@ module CtrlUnit(
         output block_instr,
         output loop_instr,
         output end_instr,
+        output operand_stack_tag_pop,
         input read_retu_num,
         input read_control_endjump,
         output function_retu_num,  //0 or 1
@@ -53,6 +54,10 @@ module CtrlUnit(
         output [2:0] LEB128_byte_cnt,
         output [(`instr_log2_bram_depth-1):0] pre_calu_return_addr
     );
+
+    reg push_num;
+    reg [3:0] pop_num;
+    reg jump_en;
 
     // reg un_hlt;
     reg jump_hlt;
@@ -108,13 +113,6 @@ module CtrlUnit(
     wire [(`instr_log2_bram_depth-1):0] function_addr_list1 = function_addr_list[1];
     wire [7:0] local_memory_sizes_list_0 = local_memory_sizes_list[0];
     wire [7:0] local_memory_sizes_list_1 = local_memory_sizes_list[1];
-
-    //global
-    reg [(`global_width-1):0] global_mem [(`global_num_max-1):0];
-    assign load_en = (Instr[7:0]==8'h28)&code_content_running;
-    assign store_en = (Instr[7:0]==8'h36)&code_content_running;
-    assign local_set = ((Instr[7:0]==8'h21)|(Instr[7:0]==8'h22))&code_content_running;
-    assign local_get = (Instr[7:0]==8'h20)&code_content_running;
     
     assign LEB128_in = ((instr_pointer_state==vector_head)|(|code_pre_read_state))? Instr[35:0]:Instr[43:8];
     assign constant = LEB128_decode;
@@ -129,14 +127,54 @@ module CtrlUnit(
     assign function_num_flag = (function_num_left < `read_window_size);
     
     //to control stack
-    assign function_call = (code_content_running&(Instr[7:0]==8'h10))|function_content_start;
+    assign function_call = (code_content_running&(Instr[7:0]==8'h10)&block_vaild)|function_content_start;
     assign end_instr = code_content_running&(Instr[7:0]==8'h0b);
     assign block_instr = code_content_running&(Instr[7:0]==8'h02);
     assign loop_instr = code_content_running&(Instr[7:0]==8'h03);    
     assign function_retu_num = function_content_start? 'b0:retu_num_reg[Instr[15:8]];
     assign function_para_num = function_content_start? 'b0:para_num_reg[Instr[15:8]];
 
+    //break control         
+    reg [31:0] break_depth;
+    reg block_hold;
+    wire break_depth_is_zero = break_depth==32'd0;
+    wire block_vaild;   //when block vaild==0, operand stack and memory stop, no jump.
+    wire block_hold_up = code_content_running&(Instr[7:0]==8'h0c)&block_vaild;
+    wire block_hold_down = end_instr&break_depth_is_zero;
+    assign block_vaild = block_hold_down|(~block_hold);
+
+    assign push_num_out = push_num & block_vaild;
+    assign pop_num_out = block_vaild? pop_num : 4'd0;
+    assign jump_en_out = jump_en & block_vaild;
+    assign operand_stack_tag_pop = block_vaild&end_instr;
+
+    always@(posedge clk or negedge rst_n)begin
+        if(~rst_n)begin
+            break_depth <= 32'd0;
+            block_hold <= 1'b0;
+        end
+        else begin
+            if(block_hold_up)begin
+                break_depth <= LEB128_decode;
+                block_hold <= 1'b1;
+            end else if(block_hold_down)begin
+                block_hold <= 1'b0;
+            end else if(end_instr)begin
+                break_depth <= break_depth - 1'd1;
+            end else if (block_hold&(block_instr|loop_instr))begin
+                break_depth <= break_depth + 1'd1;
+            end
+        end
+    end
+
+    //global
+    reg [(`global_width-1):0] global_mem [(`global_num_max-1):0];
+    assign load_en = (Instr[7:0]==8'h28)&code_content_running&block_vaild;
+    assign store_en = (Instr[7:0]==8'h36)&code_content_running&block_vaild;
+
     //local
+    assign local_set = ((Instr[7:0]==8'h21)|(Instr[7:0]==8'h22))&code_content_running&block_vaild;
+    assign local_get = (Instr[7:0]==8'h20)&code_content_running&block_vaild;
     reg [2:0] local_decl_num;
     reg [2:0] local_decl_count;
 

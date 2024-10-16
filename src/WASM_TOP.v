@@ -69,6 +69,7 @@ module WASM_TOP(
     wire control_stack_left_one;   //judge if the module is about to finish
     wire function_call; //instruction is call, jump, call stack push
     wire end_instr; //a function is finished, jump back, call stack pop
+    wire operand_stack_tag_pop; //operand stack pop
     wire function_retu_num; //return parameter number, 0 or 1
     wire control_stack_push;
     reg [`call_stack_width-1:0] control_stack_push_data;
@@ -129,10 +130,10 @@ module WASM_TOP(
         .read_pointer_shift_minusone(read_pointer_shift_minusone),
         .shift_vld(shift_vld),
         .INSTR_ERROR(o_INSTR_ERROR),
-        .jump_en(jump_en),
+        .jump_en_out(jump_en),
         .jump_addr(jump_addr),
-        .push_num(push_num),
-        .pop_num(pop_num),
+        .push_num_out(push_num),
+        .pop_num_out(pop_num),
         .push_select(push_select),
         .ALUControl(ALUControl),
         .store_en(store_en),
@@ -148,6 +149,7 @@ module WASM_TOP(
         .block_instr(block_instr),
         .loop_instr(loop_instr),
         .end_instr(end_instr),
+        .operand_stack_tag_pop(operand_stack_tag_pop),
         .read_retu_num(read_retu_num),
         .read_control_endjump(read_control_endjump),
         .function_retu_num(function_retu_num),
@@ -224,7 +226,7 @@ InstrMemCtrl #
         .pop_window_B(B_pop_window),
         .pop_window_C(C_pop_window),
         .call(function_call),
-        .return(end_instr),
+        .return(operand_stack_tag_pop),
         .function_stack_tag(control_stack_tag),
         .w_top_pointer(operand_stack_top_pointer),
         .allocate_local_memory_size(allocate_local_memory_size),
