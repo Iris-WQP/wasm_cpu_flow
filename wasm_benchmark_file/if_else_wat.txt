@@ -1,0 +1,108 @@
+(module
+  (start $main)
+  (func $main (export "main")
+    (i32.const 12) (i32.const 34)
+    (i32.const 87) (i32.const 65)
+    (call $calc)
+    (drop) (drop)
+  )
+  (func $calc (param $op i32)(param $a i32)(param $b i32)(result i32)
+    (local $c i32) (i32.const 99) (local.set $c)
+    
+	(if (result i32)
+    	(i32.eqz (local.get $op))
+        (then (local.get $a) (local.get $b) (i32.add))
+      	(else (local.get $a) (local.get $b) (i32.sub))
+    )
+  )
+)
+
+
+0000000: 0061 736d                                 ; WASM_BINARY_MAGIC
+0000004: 0100 0000                                 ; WASM_BINARY_VERSION
+; section "Type" (1)
+0000008: 01                                        ; section code
+0000009: 0b                                        ; FIXUP section size
+000000a: 02                                        ; num types
+; func type 0
+000000b: 60                                        ; func
+000000c: 00                                        ; num params
+000000d: 00                                        ; num results
+; func type 1
+000000e: 60                                        ; func
+000000f: 03                                        ; num params
+0000010: 7f                                        ; i32
+0000011: 7f                                        ; i32
+0000012: 7f                                        ; i32
+0000013: 01                                        ; num results
+0000014: 7f                                        ; i32
+
+; section "Function" (3)
+0000015: 03                                        ; section code
+0000016: 03                                        ; FIXUP section size
+0000017: 02                                        ; num functions
+0000018: 00                                        ; function 0 signature index
+0000019: 01                                        ; function 1 signature index
+
+; section "Export" (7)
+000001a: 07                                        ; section code
+000001b: 08                                        ; FIXUP section size
+000001c: 01                                        ; num exports
+000001d: 04                                        ; string length
+000001e: 6d61 696e                                main  ; export name
+0000022: 00                                        ; export kind
+0000023: 00                                        ; export func index
+
+; section "Start" (8)
+0000024: 08                                        ; section code
+0000025: 01                                        ; FIXUP section size
+0000026: 00                                        ; start func index
+
+; section "Code" (10)
+0000027: 0a                                        ; section code
+0000028: 2d                                        ; FIXUP section size
+0000029: 02                                        ; num functions
+; function body 0
+000002a: 10                                        ; FIXUP func body size
+000002b: 00                                        ; local decl count
+000002c: 41                                        ; i32.const
+000002d: 0c                                        ; i32 literal
+000002e: 41                                        ; i32.const
+000002f: 22                                        ; i32 literal
+0000030: 41                                        ; i32.const
+0000031: d700                                      ; i32 literal
+0000033: 41                                        ; i32.const
+0000034: c100                                      ; i32 literal
+0000036: 10                                        ; call
+0000037: 01                                        ; function index
+0000038: 1a                                        ; drop
+0000039: 1a                                        ; drop
+000003a: 0b                                        ; end
+
+; function body 1
+000003b: 1a                                        ; FIXUP func body size
+000003c: 01                                        ; local decl count
+000003d: 01                                        ; local type count
+000003e: 7f                                        ; i32
+000003f: 41                                        ; i32.const
+0000040: e300                                      ; i32 literal
+0000042: 21                                        ; local.set
+0000043: 03                                        ; local index
+0000044: 20                                        ; local.get
+0000045: 00                                        ; local index
+0000046: 45                                        ; i32.eqz
+0000047: 04                                        ; if
+0000048: 7f                                        ; i32
+0000049: 20                                        ; local.get
+000004a: 01                                        ; local index
+000004b: 20                                        ; local.get
+000004c: 02                                        ; local index
+000004d: 6a                                        ; i32.add
+000004e: 05                                        ; else
+000004f: 20                                        ; local.get
+0000050: 01                                        ; local index
+0000051: 20                                        ; local.get
+0000052: 02                                        ; local index
+0000053: 6b                                        ; i32.sub
+0000054: 0b                                        ; end
+0000055: 0b                                        ; end

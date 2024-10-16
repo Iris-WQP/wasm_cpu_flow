@@ -87,6 +87,7 @@ module WASM_TOP(
     wire [`instr_log2_bram_depth-1:0] pre_calu_return_addr;
     wire block_instr;
     wire loop_instr;
+    wire if_instr;
     wire control_retu_num;
 
     assign control_retu_num = ~(Instr[15:8]==8'h40);
@@ -95,7 +96,7 @@ module WASM_TOP(
     assign return_addr_tag = control_stack_top_data[`instr_log2_bram_depth-1:0];
     assign read_retu_num = control_stack_top_data[`st_log2_depth+`instr_log2_bram_depth];
     assign read_control_endjump = control_stack_top_data[`st_log2_depth+`instr_log2_bram_depth+1];
-    assign control_stack_push = function_call|block_instr|loop_instr;
+    assign control_stack_push = function_call|block_instr|loop_instr|if_instr;
     assign stack_pointer_tag = operand_stack_top_pointer - function_para_num;
     always@(*)begin
         if(function_call)begin
@@ -104,6 +105,8 @@ module WASM_TOP(
             control_stack_push_data = {2'b00, control_retu_num, operand_stack_top_pointer[`st_log2_depth-1:0], `instr_log2_bram_depth'd0};
         end else if (loop_instr)begin
             control_stack_push_data = {2'b11, control_retu_num, operand_stack_top_pointer[`st_log2_depth-1:0], (read_pointer+`instr_log2_bram_depth'd2)};
+        end else if (if_instr)begin
+            control_stack_push_data = {2'b10, control_retu_num, {operand_stack_top_pointer[`st_log2_depth-1:0]-`st_log2_depth'd1}, `instr_log2_bram_depth'd0};
         end else begin
             control_stack_push_data = 'dZ;
         end
@@ -149,6 +152,7 @@ module WASM_TOP(
         .function_call(function_call),
         .block_instr(block_instr),
         .loop_instr(loop_instr),
+        .if_instr(if_instr),
         .end_instr(end_instr),
         .operand_stack_tag_pop(operand_stack_tag_pop),
         .read_retu_num(read_retu_num),

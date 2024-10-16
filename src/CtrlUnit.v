@@ -45,6 +45,7 @@ module CtrlUnit(
         output function_call,
         output block_instr,
         output loop_instr,
+        output if_instr,
         output end_instr,
         output operand_stack_tag_pop,
         input read_retu_num,
@@ -131,9 +132,12 @@ module CtrlUnit(
     assign function_call = (code_content_running&(Instr[7:0]==8'h10)&block_vaild)|function_content_start;
     assign end_instr = code_content_running&(Instr[7:0]==8'h0b);
     assign block_instr = code_content_running&(Instr[7:0]==8'h02);
-    assign loop_instr = code_content_running&(Instr[7:0]==8'h03);    
+    assign loop_instr = code_content_running&(Instr[7:0]==8'h03);
+    assign if_instr = code_content_running&(Instr[7:0]==8'h04);
+    wire else_instr = code_content_running&(Instr[7:0]==8'h05);
     assign function_retu_num = function_content_start? 'b0:retu_num_reg[Instr[15:8]];
     assign function_para_num = function_content_start? 'b0:para_num_reg[Instr[15:8]];
+    wire control_stack_push = function_call|block_instr|loop_instr|if_instr;
 
     //break control         
     reg [31:0] break_depth;
@@ -143,7 +147,6 @@ module CtrlUnit(
     wire br_if_true = (Instr[7:0]==8'h0d)&(~ALUResult_0);
     wire block_hold_up = code_content_running&block_vaild&((Instr[7:0]==8'h0c)|br_if_true);
     wire block_hold_down = end_instr&break_depth_is_zero;
-    assign block_vaild = block_hold_down|(~block_hold);
 
     assign push_num_out = push_num & block_vaild;
     assign pop_num_out = block_vaild? pop_num : 4'd0;
@@ -165,6 +168,36 @@ module CtrlUnit(
                 break_depth <= break_depth - 1'd1;
             end else if (block_hold&(block_instr|loop_instr))begin
                 break_depth <= break_depth + 1'd1;
+            end
+        end
+    end
+
+    //if else control
+    reg if_hold;
+    reg [31:0] if_hold_depth;
+    wire if_hold_depth_is_zero = if_hold_depth==32'd0;
+    wire if_unhold = (~if_hold)|(if_hold&if_hold_depth_is_zero&end_instr);
+    assign block_vaild = (block_hold_down|(~block_hold))&if_unhold;    
+    always@(posedge clk or negedge rst_n)begin
+        if(~rst_n)begin
+            if_hold <= 1'b0;
+            if_hold_depth <= 8'd0;
+        end
+        else begin
+            if(if_hold)begin
+                if(control_stack_push)begin
+                    if_hold_depth <= if_hold_depth + 1'd1;
+                end else if(if_hold_depth_is_zero)begin
+                    if(end_instr|else_instr)begin
+                        if_hold <= 1'b0;
+                    end
+                end else if(end_instr)begin
+                    if_hold_depth <= if_hold_depth - 1'd1;
+                end
+            end else begin
+                if(else_instr|(if_instr&ALUResult_0))begin
+                    if_hold <= 1'b1;
+                end
             end
         end
     end
@@ -286,6 +319,13 @@ module CtrlUnit(
                                         ALUControl = 5'bZZZZZ;                                    
                                         read_pointer_shift_minusone = `log_read_window_size'd1;
                                     end
+                                    8'h04:begin //if
+                                        pop_num = 4'd1;
+                                        push_num = 1'b0;
+                                        push_select = 2'bZZ;                                      
+                                        ALUControl = 5'b00101;     //eqz                               
+                                        read_pointer_shift_minusone = `log_read_window_size'd1;
+                                    end                                    
                                     8'h0b:begin //end, temp for function end
                                         pop_num = 4'd0;
                                         push_num = read_retu_num;
@@ -304,7 +344,7 @@ module CtrlUnit(
                                         pop_num = 4'd1;
                                         push_num = 1'b0;
                                         push_select = 2'bZZ;                                      
-                                        ALUControl = 5'b00101;                                      
+                                        ALUControl = 5'b00101;      //eqz                                
                                         read_pointer_shift_minusone = {`shift_fill_zero'b0, LEB128_byte_cnt};
                                     end                            
                                     8'h10:begin //call

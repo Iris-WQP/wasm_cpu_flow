@@ -21,12 +21,12 @@ module ControlStack(
     reg [`call_stack_width-1:0] control_stack [`call_stack_depth-1:0]; 
     assign control_stack_left_one = (top_pointer == 'd1);
     assign function_stack_tag = control_stack[top_function_pointer][(`st_log2_depth+`instr_log2_bram_depth-1):`instr_log2_bram_depth];
-    // [frame_type(2bit), retu_num(1bit), stack_pointer_tag(4bit), retu_addr(8bit)]
-    /*          frame_type   retu_num        jump      pop
-      call      01           from list       v         end/return
-      loop      11           from ifvoid     v         end/br
-      block     00           from ifvoid     x         end/br
-      if        10           from ifvoid     x         end/br
+    // [frame_type(2bit), retu_num(1bit), stack_pointer_tag(4bit), extra(8bit)]
+    /*          frame_type   retu_num        jump      pop          extra
+      call      01           from list       v         end/return   return_address
+      loop      11           from ifvoid     v         end/br       return_address
+      block     00           from ifvoid     x         end/br       None
+      if        10           from ifvoid     x         end/br       None
     */
 
     assign top_data = (top_pointer < 'd1)? `call_stack_width'dZ : control_stack[top_pointer-'d1];
