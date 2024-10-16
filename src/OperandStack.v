@@ -20,7 +20,7 @@
         input call,
         input return,
         input [7:0] allocate_local_memory_size,
-        input [`st_width-1:0] function_stack_tag,
+        input [`st_log2_depth-1:0] function_stack_tag,
         output [`st_log2_depth:0] w_top_pointer,
 
         //local memory stack
@@ -34,15 +34,13 @@
     reg [`st_width-1:0] extend_stack [`st_depth-1:0];
     reg [`st_log2_depth:0] top_pointer;
     wire [`st_log2_depth:0] top_after_pop;
-    wire [`st_log2_depth:0] top_after_allocate_local_memory;
     wire [`st_log2_depth:0] top_after_push;    
     
     assign top_after_pop = return? function_stack_tag : (top_pointer - pop_num); 
-    assign top_after_allocate_local_memory = call? (top_after_pop + allocate_local_memory_size) : top_after_pop;
-    assign top_after_push =  top_after_allocate_local_memory + push_num;
+    assign top_after_push = top_after_pop + (call? allocate_local_memory_size:push_num);
 
     assign stack_exceed_pop = top_pointer < pop_num;
-    assign stack_exceed_push = (top_after_allocate_local_memory + push_num) > `st_depth;
+    assign stack_exceed_push = (top_after_pop + push_num) > `st_depth;
     assign w_top_pointer = top_pointer;
     
     
@@ -60,7 +58,7 @@
                 if(local_set)begin
                     extend_stack[l_addr] <= local_set_data;
                 end else if (push_num) begin
-                    extend_stack[top_after_allocate_local_memory] <= push_data;
+                    extend_stack[top_after_pop] <= push_data;
                 end
         end
     end

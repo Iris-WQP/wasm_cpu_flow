@@ -6,9 +6,13 @@ module ControlStack(
         input rst_n,
         input push, //0 or 1
         input pop, 
+        // input return_instr,
         input [`call_stack_width-1:0] push_data,
         output [`call_stack_width-1:0] top_data,
-        output control_stack_left_one
+        output control_stack_left_one,
+
+        input function_call,
+        output [`st_log2_depth-1:0] function_stack_tag
     );
 
     reg [`log_call_stack_depth:0] top_pointer;
@@ -16,6 +20,7 @@ module ControlStack(
     wire [`log_call_stack_depth:0] top_after_push;
     reg [`call_stack_width-1:0] control_stack [`call_stack_depth-1:0]; 
     assign control_stack_left_one = (top_pointer == 'd1);
+    assign function_stack_tag = control_stack[top_function_pointer][(`st_log2_depth+`instr_log2_bram_depth-1):`instr_log2_bram_depth];
     // [frame_type(2bit), retu_num(1bit), stack_pointer_tag(4bit), retu_addr(8bit)]
     /*          frame_type   retu_num        jump      pop
       call      01           from list       v         end/return
@@ -36,6 +41,26 @@ module ControlStack(
             top_pointer <= top_after_push;
             if (push) begin
                 control_stack[top_after_pop] <= push_data;
+            end
+        end
+    end
+
+    //call stack
+    wire [`log_call_stack_depth:0] top_function_pointer;
+    wire function_return;
+    reg [`log_call_stack_depth:0] function_pointer_list[(`func_num_max-1):0];
+    reg [`log_pa_re_num_max-1:0] function_pointer_list_pointer;
+    assign function_return = pop & (control_stack[top_after_pop][14:13] == 2'b01); //|return_instr;
+    assign top_function_pointer = function_pointer_list[function_pointer_list_pointer-'d1];
+
+    always@(posedge clk or negedge rst_n)begin
+        if(~rst_n)begin
+            function_pointer_list_pointer <= 'd0;
+        end
+        else begin
+            function_pointer_list_pointer <= function_pointer_list_pointer+function_call-function_return;
+            if (function_call) begin
+                function_pointer_list[function_pointer_list_pointer] <= top_after_pop;
             end
         end
     end

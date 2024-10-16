@@ -56,7 +56,7 @@ module WASM_TOP(
     wire [`pop_num_max*`st_width-1:0] pop_window;
 
     always@(*)begin
-        case({function_return, push_select})
+        case({end_instr, push_select})
             3'b100: push_data = A_pop_window;
             3'b000: push_data = ALUResult;
             3'b001: push_data = load_data;
@@ -65,34 +65,56 @@ module WASM_TOP(
         endcase
     end
 
-    //call stack
+    //control stack
     wire control_stack_left_one;   //judge if the module is about to finish
     wire function_call; //instruction is call, jump, call stack push
-    wire function_return; //a function is finished, jump back, call stack pop
+    wire end_instr; //a function is finished, jump back, call stack pop
     wire function_retu_num; //return parameter number, 0 or 1
-    wire [`call_stack_width-1:0] control_stack_push_data;
+    wire control_stack_push;
+    reg [`call_stack_width-1:0] control_stack_push_data;
     wire [`call_stack_width-1:0] control_stack_top_data;
     wire [`st_log2_depth:0] operand_stack_top_pointer;
     wire [(`st_log2_depth-1):0] stack_pointer_tag;
     wire [(`log_pa_re_num_max-1):0] function_para_num;
     wire [7:0] allocate_local_memory_size;
     wire [`st_log2_depth-1:0] function_stack_tag;
+    wire [`st_log2_depth-1:0] control_stack_tag;
+    wire read_control_endjump;    
     wire [`instr_log2_bram_depth-1:0] return_addr_tag;
+    wire read_retu_num;
     wire [2:0] LEB128_byte_cnt;
     wire [`instr_log2_bram_depth-1:0] pre_calu_return_addr;
+    wire block_instr;
+    wire loop_instr;
+    wire control_retu_num;
 
-    assign function_stack_tag = control_stack_top_data[(`st_log2_depth+`instr_log2_bram_depth-1):`instr_log2_bram_depth];
+    assign control_retu_num = ~(Instr[15:8]==8'h40);
+
+    assign control_stack_tag = control_stack_top_data[(`st_log2_depth+`instr_log2_bram_depth-1):`instr_log2_bram_depth];
     assign return_addr_tag = control_stack_top_data[`instr_log2_bram_depth-1:0];
-
-    //temp
-    assign control_stack_push_data = {2'b01, function_retu_num, stack_pointer_tag, pre_calu_return_addr};
+    assign read_retu_num = control_stack_top_data[`st_log2_depth+`instr_log2_bram_depth];
+    assign read_control_endjump = control_stack_top_data[`st_log2_depth+`instr_log2_bram_depth+1];
+    assign control_stack_push = function_call|block_instr|loop_instr;
     assign stack_pointer_tag = operand_stack_top_pointer - function_para_num;
+    always@(*)begin
+        if(function_call)begin
+            control_stack_push_data = {2'b01, function_retu_num, stack_pointer_tag, pre_calu_return_addr};
+        end else if (block_instr)begin
+            control_stack_push_data = {2'b00, control_retu_num, operand_stack_top_pointer[`st_log2_depth-1:0], `instr_log2_bram_depth'd0};
+        end else if (loop_instr)begin
+            control_stack_push_data = {2'b11, control_retu_num, operand_stack_top_pointer[`st_log2_depth-1:0], (read_pointer+`instr_log2_bram_depth'd2)};
+        end else begin
+            control_stack_push_data = 'dZ;
+        end
+    end
     
     ControlStack u_control_stack(
         .clk(i_clk),
         .rst_n(i_rst_n),
-        .push(function_call),
-        .pop(function_return),
+        .push(control_stack_push),
+        .pop(end_instr),
+        .function_call(function_call),
+        .function_stack_tag(function_stack_tag),
         .push_data(control_stack_push_data),
         .top_data(control_stack_top_data),
         .control_stack_left_one(control_stack_left_one)
@@ -123,7 +145,11 @@ module WASM_TOP(
         .return_addr_tag(return_addr_tag),
         .control_stack_left_one(control_stack_left_one),
         .function_call(function_call),
-        .function_return(function_return),
+        .block_instr(block_instr),
+        .loop_instr(loop_instr),
+        .end_instr(end_instr),
+        .read_retu_num(read_retu_num),
+        .read_control_endjump(read_control_endjump),
         .function_retu_num(function_retu_num),
         .function_para_num(function_para_num),
         .allocate_local_memory_size(allocate_local_memory_size),
@@ -198,8 +224,8 @@ InstrMemCtrl #
         .pop_window_B(B_pop_window),
         .pop_window_C(C_pop_window),
         .call(function_call),
-        .return(function_return),
-        .function_stack_tag(function_stack_tag),
+        .return(end_instr),
+        .function_stack_tag(control_stack_tag),
         .w_top_pointer(operand_stack_top_pointer),
         .allocate_local_memory_size(allocate_local_memory_size),
 
