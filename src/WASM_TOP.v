@@ -136,6 +136,7 @@ module WASM_TOP(
         .pop_num_out(pop_num),
         .push_select(push_select),
         .ALUControl(ALUControl),
+        .ALUResult_0(ALUResult[0]),
         .store_en(store_en),
         .load_en(load_en),
         .local_set(local_set),
@@ -198,7 +199,7 @@ InstrMemCtrl #
     //operand stack window
     wire [`st_width-1:0] A_pop_window;
     wire [`st_width-1:0] B_pop_window;    
-    wire [`st_width-1:0] C_pop_window;   
+    wire [`st_width-1:0] C_pop_window;
 
     //ALU operands 
     wire [`st_width-1:0] A_ALU;

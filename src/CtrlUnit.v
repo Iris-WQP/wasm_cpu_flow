@@ -24,6 +24,7 @@ module CtrlUnit(
          
         //to ALU     
         output reg [4:0] ALUControl,
+        input ALUResult_0,
         
         //to Memory
         output store_en,
@@ -139,7 +140,8 @@ module CtrlUnit(
     reg block_hold;
     wire break_depth_is_zero = break_depth==32'd0;
     wire block_vaild;   //when block vaild==0, operand stack and memory stop, no jump.
-    wire block_hold_up = code_content_running&(Instr[7:0]==8'h0c)&block_vaild;
+    wire br_if_true = (Instr[7:0]==8'h0d)&(~ALUResult_0);
+    wire block_hold_up = code_content_running&block_vaild&((Instr[7:0]==8'h0c)|br_if_true);
     wire block_hold_down = end_instr&break_depth_is_zero;
     assign block_vaild = block_hold_down|(~block_hold);
 
@@ -297,7 +299,14 @@ module CtrlUnit(
                                         push_select = 2'bZZ;                                   
                                         ALUControl = 5'bZZZZZ;                                   
                                         read_pointer_shift_minusone = {`shift_fill_zero'b0, LEB128_byte_cnt};
-                                    end                                    
+                                    end        
+                                    8'h0d:begin //br_if
+                                        pop_num = 4'd1;
+                                        push_num = 1'b0;
+                                        push_select = 2'bZZ;                                      
+                                        ALUControl = 5'b00101;                                      
+                                        read_pointer_shift_minusone = {`shift_fill_zero'b0, LEB128_byte_cnt};
+                                    end                            
                                     8'h10:begin //call
                                         pop_num = 4'd0;
                                         push_num = 1'b0;

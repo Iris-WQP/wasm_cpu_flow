@@ -1,4 +1,4 @@
-test_instr = block_nest_hex.txt
+test_instr = br_if_hex.txt
 tb_name = TB_WASM_TOP.v
 
 verilator:

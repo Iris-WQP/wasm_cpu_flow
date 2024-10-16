@@ -50,6 +50,15 @@
     
     assign local_get_data = extend_stack[l_addr];
 
+    genvar i;
+    for(i=0; i<`st_depth; i=i+1)begin
+        always@(posedge clk or negedge rst_n)begin
+            if(~rst_n)begin
+                extend_stack[i] <= 'dZ;
+            end
+        end
+    end
+
     always@(posedge clk or negedge rst_n)begin
         if(~rst_n)begin
             top_pointer <= 'd0;
