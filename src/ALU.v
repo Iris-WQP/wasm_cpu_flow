@@ -45,6 +45,12 @@ case(ALUControl)
     5'b10011: ALUResult = B << A | B >>> (32 - A);
     // i32 B rotate right A bits 0x78
     5'b10100: ALUResult = B >>> A | B << (32 - A);
+    // //i32.mul
+    // 5'b10101: ALUResult = A * B;
+    // //i32.div_s
+    // 5'b10110: ALUResult = A / B;
+    // //i32.div_u
+    // 5'b10111: ALUResult = ($unsigned A) / ($unsigned B);
 
 
     default: ALUResult = 32'd0;

@@ -48,6 +48,7 @@ module CtrlUnit(
         output if_instr,
         output br_table_instr,
         output end_instr,
+        output return_instr,
         output operand_stack_tag_pop,
         input read_retu_num,
         input read_control_endjump,
@@ -133,6 +134,7 @@ module CtrlUnit(
     //to control stack
     assign function_call = (code_content_running&(Instr[7:0]==8'h10)&block_vaild)|function_content_start;
     assign end_instr = code_content_running&(Instr[7:0]==8'h0b);
+    assign return_instr = code_content_running&(Instr[7:0]==8'h0f)&block_vaild;
     assign block_instr = code_content_running&(Instr[7:0]==8'h02);
     assign loop_instr = code_content_running&(Instr[7:0]==8'h03);
     assign if_instr = code_content_running&(Instr[7:0]==8'h04);
@@ -154,7 +156,7 @@ module CtrlUnit(
     assign push_num_out = push_num & block_vaild;
     assign pop_num_out = block_vaild? pop_num : 4'd0;
     assign jump_en_out = jump_en & block_vaild;
-    assign operand_stack_tag_pop = block_vaild&end_instr;
+    assign operand_stack_tag_pop = block_vaild&(end_instr|return_instr);
 
     always@(posedge clk or negedge rst_n)begin
         if(~rst_n)begin
@@ -357,6 +359,13 @@ module CtrlUnit(
                                         ALUControl = 5'bZZZZZ;                                   
                                         read_pointer_shift_minusone = (LEB128_byte_cnt + LEB128_decode + 'd1);
                                     end
+                                    8'h0f:begin //return
+                                        pop_num = 4'd0;
+                                        push_num = read_retu_num;
+                                        push_select = 2'b00; //ALU
+                                        ALUControl = 5'b00000;    
+                                        read_pointer_shift_minusone = `log_read_window_size'd0;                                        
+                                    end
                                     8'h10:begin //call
                                         pop_num = 4'd0;
                                         push_num = 1'b0;
@@ -478,6 +487,27 @@ module CtrlUnit(
                                         ALUControl = 5'b00001;    
                                         read_pointer_shift_minusone = `log_read_window_size'd0; 
                                     end    
+                                    8'h6c:begin //i32.mul
+                                        pop_num = 4'd2;
+                                        push_num = 1'b1;
+                                        push_select = 2'b00; //ALU
+                                        ALUControl = 5'b10101;    
+                                        read_pointer_shift_minusone = `log_read_window_size'd0; 
+                                    end
+                                    8'h6d:begin //i32.div_s
+                                        pop_num = 4'd2;
+                                        push_num = 1'b1;
+                                        push_select = 2'b00; //ALU
+                                        ALUControl = 5'b10110;    
+                                        read_pointer_shift_minusone = `log_read_window_size'd0; 
+                                    end
+                                    8'h6e:begin //i32.div_u
+                                        pop_num = 4'd2;
+                                        push_num = 1'b1;
+                                        push_select = 2'b00; //ALU
+                                        ALUControl = 5'b10111;    
+                                        read_pointer_shift_minusone = `log_read_window_size'd0; 
+                                    end
                                     8'h71:begin //i32.and
                                         pop_num = 4'd2;
                                         push_num = 1'b1;

@@ -55,16 +55,6 @@ module WASM_TOP(
     reg [`st_width-1:0] push_data;
     wire [`pop_num_max*`st_width-1:0] pop_window;
 
-    always@(*)begin
-        case({end_instr, push_select})
-            3'b100: push_data = A_pop_window;
-            3'b000: push_data = ALUResult;
-            3'b001: push_data = load_data;
-            3'b010: push_data = constant;
-            3'b011: push_data = local_mem_data;//for local/global memory
-        endcase
-    end
-
     //branch table support
     wire [`instr_log2_bram_depth-1:0] read_specific_addr;
     wire [31:0] br_table_offset;
@@ -96,6 +86,7 @@ module WASM_TOP(
     wire loop_instr;
     wire if_instr;
     wire br_table_instr;
+    wire return_instr;
     wire control_retu_num;
 
     assign control_retu_num = ~(Instr[15:8]==8'h40);
@@ -119,12 +110,23 @@ module WASM_TOP(
             control_stack_push_data = 'dZ;
         end
     end
+
+    always@(*)begin
+        case({(end_instr|return_instr), push_select})
+            3'b100: push_data = A_pop_window;
+            3'b000: push_data = ALUResult;
+            3'b001: push_data = load_data;
+            3'b010: push_data = constant;
+            3'b011: push_data = local_mem_data;//for local/global memory
+        endcase
+    end
     
     ControlStack u_control_stack(
         .clk(i_clk),
         .rst_n(i_rst_n),
         .push(control_stack_push),
         .pop(end_instr),
+        .return(return_instr),
         .function_call(function_call),
         .function_stack_tag(function_stack_tag),
         .push_data(control_stack_push_data),
@@ -163,6 +165,7 @@ module WASM_TOP(
         .if_instr(if_instr),
         .br_table_instr(br_table_instr),
         .end_instr(end_instr),
+        .return_instr(return_instr),
         .operand_stack_tag_pop(operand_stack_tag_pop),
         .read_retu_num(read_retu_num),
         .read_control_endjump(read_control_endjump),

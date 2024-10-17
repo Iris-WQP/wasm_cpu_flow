@@ -30,6 +30,6 @@ def distract_instrs(input_file, output_file):
 
 # main function
 if __name__ == '__main__':
-    distract_instrs('wasm_benchmark_file/br_table_wat.txt', 'wasm_benchmark_file/temp.txt')
-    rearrange_file('wasm_benchmark_file/temp.txt', 'wasm_benchmark_file/br_table_hex.txt')
+    distract_instrs('wasm_benchmark_file/return.txt', 'wasm_benchmark_file/temp.txt')
+    rearrange_file('wasm_benchmark_file/temp.txt', 'wasm_benchmark_file/return_hex.txt')
     

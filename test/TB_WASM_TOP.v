@@ -53,7 +53,8 @@ module TB_WASM_TOP;
         // $readmemh("block_nest_hex.txt", u_wasm_top.u_instr_mem_ctrl.bram);
         // $readmemh("br_if_hex.txt", u_wasm_top.u_instr_mem_ctrl.bram);
         // $readmemh("if_else_hex.txt", u_wasm_top.u_instr_mem_ctrl.bram);
-        $readmemh("br_table_hex.txt", u_wasm_top.u_instr_mem_ctrl.bram);
+        // $readmemh("br_table_hex.txt", u_wasm_top.u_instr_mem_ctrl.bram);
+        $readmemh("return_hex.txt", u_wasm_top.u_instr_mem_ctrl.bram);
     end
 
 //    count clk from reset to instr_finish==1
