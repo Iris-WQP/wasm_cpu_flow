@@ -1,4 +1,4 @@
-test_instr = if_else_hex.txt
+test_instr = br_table_hex.txt
 tb_name = TB_WASM_TOP.v
 
 verilator:

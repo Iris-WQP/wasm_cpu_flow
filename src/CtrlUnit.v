@@ -46,6 +46,7 @@ module CtrlUnit(
         output block_instr,
         output loop_instr,
         output if_instr,
+        output br_table_instr,
         output end_instr,
         output operand_stack_tag_pop,
         input read_retu_num,
@@ -54,7 +55,8 @@ module CtrlUnit(
         output [(`log_pa_re_num_max-1):0] function_para_num,
         output [7:0] allocate_local_memory_size,
         output [2:0] LEB128_byte_cnt,
-        output [(`instr_log2_bram_depth-1):0] pre_calu_return_addr
+        output [(`instr_log2_bram_depth-1):0] pre_calu_return_addr,
+        input [(`instr_bram_width-1):0] br_table_depth
     );
 
     reg push_num;
@@ -145,9 +147,10 @@ module CtrlUnit(
     wire break_depth_is_zero = break_depth==32'd0;
     wire block_vaild;   //when block vaild==0, operand stack and memory stop, no jump.
     wire br_if_true = (Instr[7:0]==8'h0d)&(~ALUResult_0);
-    wire block_hold_up = code_content_running&block_vaild&((Instr[7:0]==8'h0c)|br_if_true);
+    assign br_table_instr = code_content_running&block_vaild&(Instr[7:0]==8'h0e);
+    wire block_hold_up = code_content_running&block_vaild&((Instr[7:0]==8'h0c)|(Instr[7:0]==8'h0e)|br_if_true);
     wire block_hold_down = end_instr&break_depth_is_zero;
-
+    
     assign push_num_out = push_num & block_vaild;
     assign pop_num_out = block_vaild? pop_num : 4'd0;
     assign jump_en_out = jump_en & block_vaild;
@@ -160,7 +163,7 @@ module CtrlUnit(
         end
         else begin
             if(block_hold_up)begin
-                break_depth <= LEB128_decode;
+                break_depth <= (br_table_instr)?br_table_depth:LEB128_decode;
                 block_hold <= 1'b1;
             end else if(block_hold_down)begin
                 block_hold <= 1'b0;
@@ -346,7 +349,14 @@ module CtrlUnit(
                                         push_select = 2'bZZ;                                      
                                         ALUControl = 5'b00101;      //eqz                                
                                         read_pointer_shift_minusone = {`shift_fill_zero'b0, LEB128_byte_cnt};
-                                    end                            
+                                    end                   
+                                    8'h0e:begin //br_table
+                                        pop_num = 4'd1;
+                                        push_num = 1'b0;
+                                        push_select = 2'bZZ;                                      
+                                        ALUControl = 5'bZZZZZ;                                   
+                                        read_pointer_shift_minusone = (LEB128_byte_cnt + LEB128_decode + 'd1);
+                                    end
                                     8'h10:begin //call
                                         pop_num = 4'd0;
                                         push_num = 1'b0;
@@ -634,7 +644,8 @@ module CtrlUnit(
                             end else if(code_pre_read_state==2'b11)begin
                                 if(local_decl_count==local_decl_num)begin
                                     function_addr_list[vector_cnt] <= read_pointer;
-                                    jump_en <= 1'b1;                                        
+                                    jump_en <= 1'b1;      
+                                    local_decl_count <= 3'd0;                                  
                                     if(vector_cnt==(vector_num-1))begin
                                         vector_cnt <= 'd0;
                                         code_pre_read_state <= 2'b00;

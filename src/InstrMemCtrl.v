@@ -26,7 +26,10 @@ module InstrMemCtrl #
                 
                 //judge if finish instrs
                 output instr_finish,
-                output [ADDR_WIDTH-1:0] read_pointer_out
+                output [ADDR_WIDTH-1:0] read_pointer_out,
+
+                input [`instr_log2_bram_depth-1:0] read_specific_addr,
+                output [`instr_bram_width-1:0] read_specific_data
 
         // //debug
         //         ,
@@ -50,6 +53,9 @@ module InstrMemCtrl #
     reg [ADDR_WIDTH-1:0] write_pointer;
     assign instr_finish = (read_pointer == write_pointer);
     assign forward = working&(~instr_finish)&(~hlt);
+
+    assign read_specific_data = bram[read_specific_addr];
+
     always @(posedge clk or negedge rst_n) begin
         if(~rst_n) working <= 1'b1;
         else if(instr_finish) working <= 1'b0;

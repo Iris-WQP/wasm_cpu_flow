@@ -65,6 +65,13 @@ module WASM_TOP(
         endcase
     end
 
+    //branch table support
+    wire [`instr_log2_bram_depth-1:0] read_specific_addr;
+    wire [31:0] br_table_offset;
+    wire [`instr_bram_width-1:0] read_specific_data;
+    assign br_table_offset = (A_pop_window < constant)? A_pop_window:constant;
+    assign read_specific_addr = br_table_instr?(read_pointer+br_table_offset+LEB128_byte_cnt+'d1):`instr_bram_width'd0;
+
     //control stack
     wire control_stack_left_one;   //judge if the module is about to finish
     wire function_call; //instruction is call, jump, call stack push
@@ -88,6 +95,7 @@ module WASM_TOP(
     wire block_instr;
     wire loop_instr;
     wire if_instr;
+    wire br_table_instr;
     wire control_retu_num;
 
     assign control_retu_num = ~(Instr[15:8]==8'h40);
@@ -153,6 +161,7 @@ module WASM_TOP(
         .block_instr(block_instr),
         .loop_instr(loop_instr),
         .if_instr(if_instr),
+        .br_table_instr(br_table_instr),
         .end_instr(end_instr),
         .operand_stack_tag_pop(operand_stack_tag_pop),
         .read_retu_num(read_retu_num),
@@ -161,7 +170,8 @@ module WASM_TOP(
         .function_para_num(function_para_num),
         .allocate_local_memory_size(allocate_local_memory_size),
         .LEB128_byte_cnt(LEB128_byte_cnt),
-        .pre_calu_return_addr(pre_calu_return_addr)
+        .pre_calu_return_addr(pre_calu_return_addr),
+        .br_table_depth(read_specific_data)
     );
 
 //depends on instr write method, useless for now.
@@ -192,7 +202,10 @@ InstrMemCtrl #
                 .jump_en(jump_en),
                 .jump_addr(jump_addr),
                 .instr_finish(),
-                .read_pointer_out(read_pointer)
+                .read_pointer_out(read_pointer),
+                //read specific addr
+                .read_specific_addr(read_specific_addr),
+                .read_specific_data(read_specific_data)
                 // .instr_finish(o_instr_finish)
         // //debug
         //         ,
