@@ -23,6 +23,10 @@ def distract_instrs(input_file, output_file):
     # if it does, istract the contents between ":" and ";" for each line
     with open(output_file, 'w') as file:
         for line in lines:
+            # remove chars after ";"
+            if ';' in line:
+                end = line.index(';')
+                line = line[:end]
             if ':' in line:
                 start = line.index(':')
                 end = 50
@@ -30,6 +34,6 @@ def distract_instrs(input_file, output_file):
 
 # main function
 if __name__ == '__main__':
-    distract_instrs('wasm_benchmark_file/return.txt', 'wasm_benchmark_file/temp.txt')
-    rearrange_file('wasm_benchmark_file/temp.txt', 'wasm_benchmark_file/return_hex.txt')
+    distract_instrs('wasm_benchmark_file/gemm.txt', 'wasm_benchmark_file/temp.txt')
+    rearrange_file('wasm_benchmark_file/temp.txt', 'wasm_benchmark_file/gemm_hex.txt')
     
