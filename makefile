@@ -22,6 +22,11 @@ generate_instructions:
 check_result:
 	python CheckResult.py
 
+sram:
+	iverilog -o wave_sram ./test/sram_tb.v
+	vvp -n wave_sram -lxt2
+	gtkwave ./wave_sram.vcd &
+
 clean:
 	rm -f ./wave 
 	rm -f ./*.vcd 

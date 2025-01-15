@@ -6,7 +6,7 @@ module ControlStack(
         input rst_n,
         input push, //0 or 1
         input pop, 
-        input return,
+        input retu,
         input [`call_stack_width-1:0] push_data,
         output [`call_stack_width-1:0] top_data,
         output control_stack_left_one,
@@ -30,8 +30,8 @@ module ControlStack(
       if        10           from ifvoid     x         end/br       None
     */
 
-    assign top_data = return?  control_stack[top_function_pointer] : ((top_pointer < 'd1)? `call_stack_width'dZ : control_stack[top_pointer-'d1]);
-    assign top_after_pop = return? top_function_pointer : (top_pointer-pop);
+    assign top_data = retu?  control_stack[top_function_pointer] : ((top_pointer < 'd1)? `call_stack_width'dZ : control_stack[top_pointer-'d1]);
+    assign top_after_pop = retu? top_function_pointer : (top_pointer-pop);
     assign top_after_push = top_after_pop+push;
 
     always@(posedge clk or negedge rst_n)begin
