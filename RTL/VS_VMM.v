@@ -1,6 +1,6 @@
 `include "RTL/CNN_defines.vh"
 `include "RTL/Single_MAC_array.v"
-`include "RTL/generate_vld_shift.v"
+// `include "RTL/generate_vld_shift.v"
 
 
 module VS_VMM

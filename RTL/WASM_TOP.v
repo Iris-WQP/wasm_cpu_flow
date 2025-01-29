@@ -4,7 +4,7 @@
 `include "RTL/ALU.v"
 `include "RTL/OperandStack.v"
 `include "RTL/ControlStack.v"
-// `include "RTL/VS_MVM_TOP.v"
+`include "RTL/VS_MVM_TOP.v"
 `include "RTL/wasm_defines.vh"
 `include "RTL/i2c_slave.v"
 
@@ -383,6 +383,13 @@ InstrMemCtrl #
     wire [`log2_Height_max-1:0]height;
     wire [`log2_Width_max-`log2_Tin-1:0]Win_div_Tin;
     wire [`log2_Width_max-`log2_Tin-1:0]Wout_div_Tout;
+    wire [`MAX_DW*`Tin-1:0] i_feature_slice;
+    wire i_feature_vld;
+    wire [`MAX_DW*`Tin-1:0] i_weight_slice;
+    wire i_weight_vld;
+    wire [`MAX_DW*`Tout-1:0] vs_out;
+    wire vs_out_vld;
+    wire loop_height_done;
 
     assign shift = A_pop_window[28:24];
     assign height = A_pop_window[9:0];
@@ -390,27 +397,27 @@ InstrMemCtrl #
     assign Wout_div_Tout = A_pop_window[23:17];
     
 
-    // VS_MVM_TOP u_MVM_TOP
-    // (
-    //     .clk(i_clk), 
-    //     .rst_n(i_rst_n),
+    VS_MVM_TOP u_MVM_TOP
+    (
+        .clk(i_clk), 
+        .rst_n(i_rst_n),
         
-    //     //32bit configuration from stack
-    //     .shift(shift),
-    //     .height(height),
-    //     .Win_div_Tin(Win_div_Tin),
-    //     .Wout_div_Tout(Wout_div_Tout),
+        //32bit configuration from stack
+        .shift(shift),
+        .height(height),
+        .Win_div_Tin(Win_div_Tin),
+        .Wout_div_Tout(Wout_div_Tout),
 
-    //     .i_dat(i_feature), 
-    //     .dat_vld(input_feature_vld),
+        .i_dat(i_feature_slice), 
+        .dat_vld(i_feature_vld),
 
-    //     .i_wt(i_weight_slice),
-    //     .wt_vld(input_weight_vld),
+        .i_wt(i_weight_slice),
+        .wt_vld(i_weight_vld),
 
-    //     .dat_out(o_feature),
-    //     .dat_out_vld(output_feature_vld),
-    //     .loop_height_done(loop_height_done)
-    // );
+        .dat_out(vs_out),
+        .dat_out_vld(vs_out_vld),
+        .loop_height_done(loop_height_done)
+    );
 
 
 /*------------------------------------------------i2c------------------------------------------------*/

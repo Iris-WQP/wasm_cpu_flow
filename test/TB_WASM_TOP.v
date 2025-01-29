@@ -95,18 +95,19 @@ module TB_WASM_TOP;
 
     initial begin
         $display("Loading test data");
-        // $readmemh("/data/home2/qiupingw/DigitalFlow_256KB_64KB_Final/Sim/WASM_TOP/TB/br_table_hex.txt", bram);
-        // $readmemh("/data/home2/qiupingw/DigitalFlow_256KB_64KB_Final/Sim/WASM_TOP/TB/br_table_wat_hex.txt", bram);
-        // $readmemh("/data/home2/qiupingw/DigitalFlow_256KB_64KB_Final/Sim/WASM_TOP/TB/mem_if_global_hex.txt", bram);
-        // $readmemh("/data/home2/qiupingw/DigitalFlow_256KB_64KB_Final/Sim/WASM_TOP/TB/ifelse_nest2_hex.txt", bram);
-        // $readmemh("/data/home2/qiupingw/DigitalFlow_256KB_64KB_Final/Sim/WASM_TOP/TB/factorial_hex.txt", bram);
-        // $readmemh("/data/home2/qiupingw/DigitalFlow_256KB_64KB_Final/Sim/WASM_TOP/TB/sign_shift_hex.txt", bram);
-        // $readmemh("/data/home2/qiupingw/DigitalFlow_256KB_64KB_Final/Sim/WASM_TOP/TB/sign_shift2_hex.txt", bram);
-        // $readmemh("/data/home2/qiupingw/DigitalFlow_256KB_64KB_Final/Sim/WASM_TOP/TB/vmv3_hex.txt", bram);
-        // $readmemh("/data/home2/qiupingw/DigitalFlow_256KB_64KB_Final/Sim/WASM_TOP/TB/vmv10_hex.txt", bram);
-        // $readmemh("/data/home2/qiupingw/DigitalFlow_256KB_64KB_Final/Sim/WASM_TOP/TB/vmm10_hex.txt", bram);
-        // $readmemh("/data/home2/qiupingw/DigitalFlow_256KB_64KB_Final/Sim/WASM_TOP/TB/vmm10_s_hex.txt", bram);
-        $readmemh("return_hex.txt", bram);
+        // $readmemh("/home/wu/wasm_cpu/wasm_cpu_flow/test/hex_files/br_table_hex.txt", bram);
+        // $readmemh("/home/wu/wasm_cpu/wasm_cpu_flow/test/hex_files/br_table_wat_hex.txt", bram);
+        // $readmemh("/home/wu/wasm_cpu/wasm_cpu_flow/test/hex_files/mem_if_global_hex.txt", bram);
+        // $readmemh("/home/wu/wasm_cpu/wasm_cpu_flow/test/hex_files/ifelse_nest2_hex.txt", bram);
+        // $readmemh("/home/wu/wasm_cpu/wasm_cpu_flow/test/hex_files/factorial_hex.txt", bram);
+        // $readmemh("/home/wu/wasm_cpu/wasm_cpu_flow/test/hex_files/sign_shift_hex.txt", bram);
+        // $readmemh("/home/wu/wasm_cpu/wasm_cpu_flow/test/hex_files/sign_shift2_hex.txt", bram);
+        // $readmemh("/home/wu/wasm_cpu/wasm_cpu_flow/test/hex_files/vmv3_hex.txt", bram);
+        // $readmemh("/home/wu/wasm_cpu/wasm_cpu_flow/test/hex_files/vmv10_hex.txt", bram);
+        // $readmemh("/home/wu/wasm_cpu/wasm_cpu_flow/test/hex_files/vmm10_hex.txt", bram);
+        // $readmemh("/home/wu/wasm_cpu/wasm_cpu_flow/test/hex_files/vmm10_s_hex.txt", bram);
+        // $readmemh("return_hex.txt", bram);
+        $display("Test data loaded: %0d %0d", bram[0], bram[1]);
     end
 
     always @ (posedge clk or negedge rst_n) begin
