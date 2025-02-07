@@ -2,7 +2,7 @@
 `include "RTL/wasm_defines.vh"
 `include "RTL/WASM_TOP.v"
 `include "RTL/i2c_master.v"
-`define T 20
+`define T 2
 module TB_WASM_TOP;
 
     // clk & rst
@@ -11,7 +11,7 @@ module TB_WASM_TOP;
     reg rst_n;
     initial begin
     rst_n = 0;
-    # 23;
+    # 3;
     rst_n = 1;
     end
 
@@ -98,7 +98,7 @@ module TB_WASM_TOP;
         // $readmemh("/home/wu/wasm_cpu/wasm_cpu_flow/test/hex_files/br_table_hex.txt", bram);
         // $readmemh("/home/wu/wasm_cpu/wasm_cpu_flow/test/hex_files/br_table_wat_hex.txt", bram);
         // $readmemh("/home/wu/wasm_cpu/wasm_cpu_flow/test/hex_files/mem_if_global_hex.txt", bram);
-        // $readmemh("/home/wu/wasm_cpu/wasm_cpu_flow/test/hex_files/ifelse_nest2_hex.txt", bram);
+        $readmemh("/home/wu/wasm_cpu/wasm_cpu_flow/test/hex_files/ifelse_nest2_hex.txt", bram);
         // $readmemh("/home/wu/wasm_cpu/wasm_cpu_flow/test/hex_files/factorial_hex.txt", bram);
         // $readmemh("/home/wu/wasm_cpu/wasm_cpu_flow/test/hex_files/sign_shift_hex.txt", bram);
         // $readmemh("/home/wu/wasm_cpu/wasm_cpu_flow/test/hex_files/sign_shift2_hex.txt", bram);
@@ -107,7 +107,7 @@ module TB_WASM_TOP;
         // $readmemh("/home/wu/wasm_cpu/wasm_cpu_flow/test/hex_files/vmm10_hex.txt", bram);
         // $readmemh("/home/wu/wasm_cpu/wasm_cpu_flow/test/hex_files/vmm10_s_hex.txt", bram);
         // $readmemh("return_hex.txt", bram);
-        $display("Test data loaded: %0d %0d", bram[0], bram[1]);
+        $display("Test data loaded: %0h %0h %0h %0h", bram[0], bram[1], bram[2], bram[3]);
     end
 
     always @ (posedge clk or negedge rst_n) begin
@@ -146,7 +146,7 @@ module TB_WASM_TOP;
     //generate .vcd
 
         initial begin
-            $dumpfile("wave.vcd"); 
+            $dumpfile("wave111.vcd"); 
             $dumpvars(0);
         end
         // initial begin
@@ -207,37 +207,37 @@ module TB_WASM_TOP;
     always @(*) begin
         if (o_work_state == 2'b11) begin
             $display("clk_cnt = %0d", clk_cnt);
-            #62 i_line_mem_rd_addr = 9'h100;
-            #20 $display("global[0] = %0d, %b", $signed(o_line_mem_rd_data), o_line_mem_rd_data);
+            #7 i_line_mem_rd_addr = 9'h100;
+            #2 $display("global[0] = %0d, %b", $signed(o_line_mem_rd_data), o_line_mem_rd_data);
                 i_line_mem_rd_addr = 9'h101;
-            #20 $display("global[1] = %0d", $signed(o_line_mem_rd_data));
+            #2 $display("global[1] = %0d", $signed(o_line_mem_rd_data));
                 i_line_mem_rd_addr = 9'h102;     
-            #20 $display("global[2] = %0d", $signed(o_line_mem_rd_data));
+            #2 $display("global[2] = %0d", $signed(o_line_mem_rd_data));
                 i_line_mem_rd_addr = 9'h103;     
-            #20 $display("global[3] = %0d", $signed(o_line_mem_rd_data));
+            #2 $display("global[3] = %0d", $signed(o_line_mem_rd_data));
                 i_line_mem_rd_addr = 9'h104;     
-            #20 $display("global[4] = %0d", $signed(o_line_mem_rd_data));
+            #2 $display("global[4] = %0d", $signed(o_line_mem_rd_data));
                 i_line_mem_rd_addr = 9'h105;     
-            #20 $display("global[5] = %0d", $signed(o_line_mem_rd_data));
+            #2 $display("global[5] = %0d", $signed(o_line_mem_rd_data));
                 i_line_mem_rd_addr = 9'h106;     
-            #20 $display("global[6] = %0d", $signed(o_line_mem_rd_data));
+            #2 $display("global[6] = %0d", $signed(o_line_mem_rd_data));
                 i_line_mem_rd_addr = 9'h107;     
-            #20 $display("global[7] = %0d", $signed(o_line_mem_rd_data));   
+            #2 $display("global[7] = %0d", $signed(o_line_mem_rd_data));   
                 i_line_mem_rd_addr = 9'h108;     
-            #20 $display("global[8] = %0d", $signed(o_line_mem_rd_data));   
+            #2 $display("global[8] = %0d", $signed(o_line_mem_rd_data));   
                 i_line_mem_rd_addr = 9'h109;     
-            #20 $display("global[9] = %0d", $signed(o_line_mem_rd_data));        
+            #2 $display("global[9] = %0d", $signed(o_line_mem_rd_data));        
                 i_line_mem_rd_addr = 9'h000;     
-            #20 $display("out_mem[0] = %0d", $signed(o_line_mem_rd_data));      
+            #2 $display("out_mem[0] = %0d", $signed(o_line_mem_rd_data));      
                 i_line_mem_rd_addr = 9'h001;     
-            #20 $display("out_mem[1] = %0d", $signed(o_line_mem_rd_data));         
+            #2 $display("out_mem[1] = %0d", $signed(o_line_mem_rd_data));         
                 i_line_mem_rd_addr = 9'h009;     
-            #20 $display("out_mem[9] = %0d", $signed(o_line_mem_rd_data));                                            
-            #100 $finish;
+            #2 $display("out_mem[9] = %0d", $signed(o_line_mem_rd_data));                                            
+            #10 $finish;
         end
     end        
     initial begin 
-        #1000000
+        #100000
         $finish;
     end
             

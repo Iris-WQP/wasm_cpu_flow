@@ -14,7 +14,7 @@ wave_iverilog:
 	cp ./wasm_benchmark_file/$(test_instr) ./
 	iverilog -o wave ./test/$(tb_name)
 	vvp -n wave -lxt2
-	gtkwave ./wave.vcd &
+	gtkwave ./wave111.vcd &
 
 generate_instructions:
 	python3 arrange_instr_format.py

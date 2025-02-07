@@ -178,7 +178,7 @@ module InstrMemCtrl #
             endcase             
     end
 
-    reg CEN;
+    reg CEN; // low enable
 
     always@(posedge clk or negedge rst_n)begin
         if(~rst_n) CEN <= 1'b1;
