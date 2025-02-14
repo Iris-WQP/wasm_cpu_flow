@@ -20,9 +20,9 @@
 `define instr_bram_depth 256
 `define instr_log2_bram_depth 8
 
-`define instr_read_width 72   //8 bit operand + 64bit opcode, window size
-`define read_window_size (`instr_read_width/`instr_bram_width) //9
-`define log_read_window_size 4
+`define instr_read_width 64   //8 bit operand + 56bit opcode, window size
+`define read_window_size (`instr_read_width/`instr_bram_width) //8
+`define log_read_window_size 3
 
 `define instr_write_width 256
 `define write_window_size (`instr_write_width/`instr_bram_width) //32

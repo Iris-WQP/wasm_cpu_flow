@@ -126,7 +126,7 @@ module WASM_TOP(
         .rst_n(i_rst_n),
         .push(control_stack_push),
         .pop(end_instr),
-        .return(return_instr),
+        .retu(return_instr),
         .function_call(function_call),
         .function_stack_tag(function_stack_tag),
         .push_data(control_stack_push_data),
@@ -193,18 +193,17 @@ InstrMemCtrl #
                 .shift_vld(shift_vld),
                 .hlt(hlt),
                 
-                .re(shift_vld),
+                // .re(shift_vld),
                 .read_pointer_shift_minusone(read_pointer_shift_minusone),
                 .rd_data(Instr),
                 .rd_data_vld(Instr_vld),
-                //write port
-                .we(wr_req_vld),     //wr_req_vld
-                .write_pointer_shift_minusone(write_pointer_shift_minusone),
-                .wr_data(wr_data),
+                // //write port
+                // .we(wr_req_vld),     //wr_req_vld
+                // .write_pointer_shift_minusone(write_pointer_shift_minusone),
+                // .wr_data(wr_data),
                 //jump
                 .jump_en(jump_en),
                 .jump_addr(jump_addr),
-                .instr_finish(),
                 .read_pointer_out(read_pointer),
                 //read specific addr
                 .read_specific_addr(read_specific_addr),
@@ -269,6 +268,6 @@ InstrMemCtrl #
     .rd_data_vld(load_vld),
     .we(store_en),
     .wr_data(A_pop_window)
-);
+    );
 
 endmodule

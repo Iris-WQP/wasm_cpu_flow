@@ -1,0 +1,240 @@
+(module
+  (start $main)
+  (memory 1)
+  (global $g0 (export "g0") (mut i32) (i32.const 69312))
+  (global $g1 (export "g1") (mut i32) (i32.const 0))
+ (global $g2  (export "g2") (mut i32) (i32.const 20))
+  (func $main
+    (i32.const 12) (i32.const 0)
+    (i32.const 87) (i32.const 65)
+    (i32.const 0) (i32.const 6) (i32.store)
+    (call $calc) 
+    (global.set $g0) (global.set $g1)
+  )
+  (func $calc (param $op i32)(param $a i32)(param $b i32)(result i32)
+    (local $c i32) (i32.const 0)(i32.load)(local.set $c)
+	(if (result i32)
+    	(i32.eqz (local.get $op)) 
+        (then (local.get $a)(global.get $g2)
+           (if(param i32)(param i32)(result i32)(i32.eqz (global.get $g1))
+		    (then (i32.rotl)(local.get $b)(i32.div_u))
+            (else (i32.rotl)(local.get $b)(i32.rem_u))
+           )
+        )
+      	(else (local.get $b) (local.get $c)(i32.shl) 
+          (local.get $c)(i32.rem_s))
+    ) 
+  )
+)
+---------------------------------------------------------------------------
+0000000: 0061 736d                                 ; WASM_BINARY_MAGIC
+0000004: 0100 0000                                 ; WASM_BINARY_VERSION
+; section "Type" (1)
+0000008: 01                                        ; section code
+0000009: 11                                        ; FIXUP section size
+000000a: 03                                        ; num types
+; func type 0
+000000b: 60                                        ; func
+000000c: 00                                        ; num params
+000000d: 00                                        ; num results
+; func type 1
+000000e: 60                                        ; func
+000000f: 03                                        ; num params
+0000010: 7f                                        ; i32
+0000011: 7f                                        ; i32
+0000012: 7f                                        ; i32
+0000013: 01                                        ; num results
+0000014: 7f                                        ; i32
+; func type 2
+0000015: 60                                        ; func
+0000016: 02                                        ; num params
+0000017: 7f                                        ; i32
+0000018: 7f                                        ; i32
+0000019: 01                                        ; num results
+000001a: 7f                                        ; i32
+
+; section "Function" (3)
+000001b: 03                                        ; section code
+000001c: 03                                        ; FIXUP section size
+000001d: 02                                        ; num functions
+000001e: 00                                        ; function 0 signature index
+000001f: 01                                        ; function 1 signature index
+
+; section "Memory" (5)
+0000020: 05                                        ; section code
+0000021: 03                                        ; FIXUP section size
+0000022: 01                                        ; num memories
+; memory 0
+0000023: 00                                        ; limits: flags
+0000024: 01                                        ; limits: initial
+
+; section "Global" (6)
+0000025: 06                                        ; section code
+0000026: 12                                        ; FIXUP section size
+0000027: 03                                        ; num globals
+0000028: 7f                                        ; i32
+0000029: 01                                        ; global mutability
+000002a: 41                                        ; i32.const
+000002b: c09d 04                                   ; i32 literal
+000002e: 0b                                        ; end
+000002f: 7f                                        ; i32
+0000030: 01                                        ; global mutability
+0000031: 41                                        ; i32.const
+0000032: 00                                        ; i32 literal
+0000033: 0b                                        ; end
+0000034: 7f                                        ; i32
+0000035: 01                                        ; global mutability
+0000036: 41                                        ; i32.const
+0000037: 14                                        ; i32 literal
+0000038: 0b                                        ; end
+
+; section "Export" (7)
+0000039: 07                                        ; section code
+000003a: 10                                        ; FIXUP section size
+000003b: 03                                        ; num exports
+000003c: 02                                        ; string length
+000003d: 6730                                     g0  ; export name
+000003f: 03                                        ; export kind
+0000040: 00                                        ; export global index
+0000041: 02                                        ; string length
+0000042: 6731                                     g1  ; export name
+0000044: 03                                        ; export kind
+0000045: 01                                        ; export global index
+0000046: 02                                        ; string length
+0000047: 6732                                     g2  ; export name
+0000049: 03                                        ; export kind
+000004a: 02                                        ; export global index
+
+; section "Start" (8)
+000004b: 08                                        ; section code
+000004c: 01                                        ; FIXUP section size
+000004d: 00                                        ; start func index
+
+; section "Code" (10)
+000004e: 0a                                        ; section code
+000004f: 49                                        ; FIXUP section size
+0000050: 02                                        ; num functions
+; function body 0
+0000051: 19                                        ; FIXUP func body size
+0000052: 00                                        ; local decl count
+0000053: 41                                        ; i32.const
+0000054: 0c                                        ; i32 literal
+0000055: 41                                        ; i32.const
+0000056: 00                                        ; i32 literal
+0000057: 41                                        ; i32.const
+0000058: d700                                      ; i32 literal
+000005a: 41                                        ; i32.const
+000005b: c100                                      ; i32 literal
+000005d: 41                                        ; i32.const
+000005e: 00                                        ; i32 literal
+000005f: 41                                        ; i32.const
+0000060: 06                                        ; i32 literal
+0000061: 36                                        ; i32.store
+0000062: 02                                        ; alignment
+0000063: 00                                        ; store offset
+0000064: 10                                        ; call
+0000065: 01                                        ; function index
+0000066: 24                                        ; global.set
+0000067: 00                                        ; global index
+0000068: 24                                        ; global.set
+0000069: 01                                        ; global index
+000006a: 0b                                        ; end
+
+; function body 1
+000006b: 2d                                        ; FIXUP func body size
+000006c: 01                                        ; local decl count
+000006d: 01                                        ; local type count
+000006e: 7f                                        ; i32
+000006f: 41                                        ; i32.const
+0000070: 00                                        ; i32 literal
+0000071: 28                                        ; i32.load
+0000072: 02                                        ; alignment
+0000073: 00                                        ; load offset
+0000074: 21                                        ; local.set
+0000075: 03                                        ; local index
+0000076: 20                                        ; local.get
+0000077: 00                                        ; local index
+0000078: 45                                        ; i32.eqz
+0000079: 04                                        ; if
+000007a: 7f                                        ; i32
+000007b: 20                                        ; local.get
+000007c: 01                                        ; local index
+000007d: 23                                        ; global.get
+000007e: 02                                        ; global index
+000007f: 23                                        ; global.get
+0000080: 01                                        ; global index
+0000081: 45                                        ; i32.eqz
+0000082: 04                                        ; if
+0000083: 02                                        ; block type function index
+0000084: 77                                        ; i32.rotl
+0000085: 20                                        ; local.get
+0000086: 02                                        ; local index
+0000087: 6e                                        ; i32.div_u
+0000088: 05                                        ; else
+0000089: 77                                        ; i32.rotl
+000008a: 20                                        ; local.get
+000008b: 02                                        ; local index
+000008c: 70                                        ; i32.rem_u
+000008d: 0b                                        ; end
+000008e: 05                                        ; else
+000008f: 20                                        ; local.get
+0000090: 02                                        ; local index
+0000091: 20                                        ; local.get
+0000092: 03                                        ; local index
+0000093: 74                                        ; i32.shl
+0000094: 20                                        ; local.get
+0000095: 03                                        ; local index
+0000096: 6f                                        ; i32.rem_s
+0000097: 0b                                        ; end
+0000098: 0b                                        ; end
+
+
+; section "name"
+0000099: 00                                        ; section code
+000009a: 00                                        ; section size (guess)
+000009b: 04                                        ; string length
+000009c: 6e61 6d65                                name  ; custom section name
+00000a0: 01                                        ; name subsection type
+00000a1: 00                                        ; subsection size (guess)
+00000a2: 02                                        ; num names
+00000a3: 00                                        ; elem index
+00000a4: 04                                        ; string length
+00000a5: 6d61 696e                                main  ; elem name 0
+00000a9: 01                                        ; elem index
+00000aa: 04                                        ; string length
+00000ab: 6361 6c63                                calc  ; elem name 1
+00000a1: 0d                                        ; FIXUP subsection size
+00000af: 02                                        ; local name type
+00000b0: 00                                        ; subsection size (guess)
+00000b1: 02                                        ; num functions
+00000b2: 00                                        ; function index
+00000b3: 00                                        ; num locals
+00000b4: 01                                        ; function index
+00000b5: 04                                        ; num locals
+00000b6: 00                                        ; local index
+00000b7: 02                                        ; string length
+00000b8: 6f70                                     op  ; local name 0
+00000ba: 01                                        ; local index
+00000bb: 01                                        ; string length
+00000bc: 61                                       a  ; local name 1
+00000bd: 02                                        ; local index
+00000be: 01                                        ; string length
+00000bf: 62                                       b  ; local name 2
+00000c0: 03                                        ; local index
+00000c1: 01                                        ; string length
+00000c2: 63                                       c  ; local name 3
+00000b0: 12                                        ; FIXUP subsection size
+00000c3: 07                                        ; name subsection type
+00000c4: 00                                        ; subsection size (guess)
+00000c5: 03                                        ; num names
+00000c6: 00                                        ; elem index
+00000c7: 02                                        ; string length
+00000c8: 6730                                     g0  ; elem name 0
+00000ca: 01                                        ; elem index
+00000cb: 02                                        ; string length
+00000cc: 6731                                     g1  ; elem name 1
+00000ce: 02                                        ; elem index
+00000cf: 02                                        ; string length
+00000d0: 6732                                     g2  ; elem name 2
+00000c4: 0d                                        ; FIXUP subsection size
+000009a: 37                                        ; FIXUP section size

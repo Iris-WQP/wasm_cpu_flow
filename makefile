@@ -14,13 +14,18 @@ wave_iverilog:
 	cp ./wasm_benchmark_file/$(test_instr) ./
 	iverilog -o wave ./test/$(tb_name)
 	vvp -n wave -lxt2
-	gtkwave ./wave.vcd &
+	gtkwave ./wave111.vcd &
 
 generate_instructions:
 	python3 arrange_instr_format.py
 
 check_result:
 	python CheckResult.py
+
+sram:
+	iverilog -o wave_sram ./test/sram_tb.v
+	vvp -n wave_sram -lxt2
+	gtkwave ./wave_sram.vcd &
 
 clean:
 	rm -f ./wave 

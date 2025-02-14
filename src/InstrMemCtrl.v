@@ -8,24 +8,23 @@ module InstrMemCtrl #
              (
                 input clk,
                 input rst_n,
-                input  shift_vld,
+                input shift_vld,
                 input hlt,
                 
-                input re,
+                // input re,
                 input [7:0] read_pointer_shift_minusone,
                 output reg [`instr_read_width-1:0] rd_data,
                 output reg rd_data_vld,
-                //write port
-                input we,     //wr_req_vld
-                input [`log_write_window_size-1:0] write_pointer_shift_minusone,
-                input [`instr_write_width-1:0] wr_data,
+                // //write port
+                // input we,     //wr_req_vld
+                // input [`log_write_window_size-1:0] write_pointer_shift_minusone,
+                // input [`instr_write_width-1:0] wr_data,
 
                 //jump
                 input jump_en,
                 input [`instr_log2_bram_depth-1:0] jump_addr,
                 
-                //judge if finish instrs
-                output instr_finish,
+
                 output [ADDR_WIDTH-1:0] read_pointer_out,
 
                 input [`instr_log2_bram_depth-1:0] read_specific_addr,
@@ -45,33 +44,31 @@ module InstrMemCtrl #
             //  assign bram_sample_255 = bram[255];
 
     reg [ADDR_WIDTH-1:0] read_pointer;
-    reg working;
-    wire forward;
+    // reg working;
+    wire forward = (~hlt);
 //    (*ram_style="block"*)
     reg [DATA_WIDTH-1:0] bram [0:DEPTH-1];
     // reg [ADDR_WIDTH-1:0] read_pointer; 
-    reg [ADDR_WIDTH-1:0] write_pointer;
-    assign instr_finish = (read_pointer == write_pointer);
-    assign forward = working&(~instr_finish)&(~hlt);
-
+    // reg [ADDR_WIDTH-1:0] write_pointer;
+    // assign instr_finish = (read_pointer == write_pointer);
     assign read_specific_data = bram[read_specific_addr];
 
-    always @(posedge clk or negedge rst_n) begin
-        if(~rst_n) working <= 1'b1;
-        else if(instr_finish) working <= 1'b0;
-    end
+    // always @(posedge clk or negedge rst_n) begin
+    //     if(~rst_n) working <= 1'b1;
+    //     else if(instr_finish) working <= 1'b0;
+    // end
 
-    //write pointer change in the cycle after we is high
-    always @(posedge clk or negedge rst_n) begin
-        if(~rst_n) begin  
-//            write_pointer <= 0;
-              write_pointer <= 'd200;
-        end else begin
-            if(we)begin
-                write_pointer <= write_pointer + write_pointer_shift_minusone + 1;
-            end
-        end
-    end
+//     //write pointer change in the cycle after we is high
+//     always @(posedge clk or negedge rst_n) begin
+//         if(~rst_n) begin  
+// //            write_pointer <= 0;
+//               write_pointer <= 'd200;
+//         end else begin
+//             if(we)begin
+//                 write_pointer <= write_pointer + write_pointer_shift_minusone + 1;
+//             end
+//         end
+//     end
 
     assign read_pointer_out = (jump_en)?jump_addr:read_pointer;
 
@@ -86,31 +83,47 @@ module InstrMemCtrl #
         end
     end
 
-    genvar j;  
-    generate       //generate write              
-        for(j=0;j<`write_window_size;j=j+1)
-        begin:tp_wt    
-            always @(*) begin
-                if(we)begin
-                    bram[write_pointer+j] <= wr_data[j*`instr_bram_width+:`instr_bram_width];
-                end
-            end
-        end                        
-    endgenerate
+    // genvar j;  
+    // generate       //generate write              
+    //     for(j=0;j<`write_window_size;j=j+1)
+    //     begin:tp_wt    
+    //         always @(*) begin
+    //             if(we)begin
+    //                 bram[write_pointer+j] <= wr_data[j*`instr_bram_width+:`instr_bram_width];
+    //             end
+    //         end
+    //     end                        
+    // endgenerate
 
-    genvar i;
+    // genvar i;
+    // generate
+    //     for(i=0;i<`read_window_size;i=i+1)
+    //     begin: tp_rd
+    //         always @(*) begin
+    //             if(shift_vld)begin
+    //                 rd_data[i*`instr_bram_width+:`instr_bram_width] = bram[read_pointer_out+i];    
+    //                 rd_data_vld = 1'd1;          
+    //             end else begin
+    //                 rd_data = 'd0;
+    //                 rd_data_vld = 1'd0;
+    //             end                
+    //         end
+    //     end
+    // endgenerate      
+
+    integer i;
     generate
-        for(i=0;i<`read_window_size;i=i+1)
-        begin: tp_rd
-            always @(*) begin
-                if(re)begin
-                    rd_data[i*`instr_bram_width+:`instr_bram_width] = bram[read_pointer_out+i];    
-                    rd_data_vld = 1'd1;          
-                end else begin
-                    rd_data = 'd0;
-                    rd_data_vld = 1'd0;
-                end                
-            end
+        always @(*) begin
+            if(shift_vld)begin
+                for(i=0;i<`read_window_size;i=i+1)
+                begin: tp_rd
+                    rd_data[i*`instr_bram_width+:`instr_bram_width] = bram[read_pointer_out+i];   
+                end 
+                rd_data_vld = 1'd1;          
+            end else begin
+                rd_data = 'd0;
+                rd_data_vld = 1'd0;
+            end                
         end
     endgenerate      
 
