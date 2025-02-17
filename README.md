@@ -10,6 +10,14 @@ gedit makefile
 On the first line, set `test_instr` to the target benchmark with "_hex.txt" as the suffix.
 
 ### run flow:
+
+iverilog is better than verilator at this point
+
+```bash
+make iverilog
+```
+
+verilator version has some problem
 ``` bash
 make
 cd obj_dir
