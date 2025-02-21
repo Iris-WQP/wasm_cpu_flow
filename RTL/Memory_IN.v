@@ -1,4 +1,4 @@
-`include "CNN_defines.vh"
+`include "RTL/CNN_defines.vh"
 
 module Memory_IN#
 (

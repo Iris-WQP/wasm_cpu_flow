@@ -32,7 +32,9 @@
       (i32.const 2112)
       (i32.const 42)))
   (func $f7 (type $t11) (param $p0 i64) (result i32)
-    (local $l1 i32) (local $l2 i32) (local $l3 i32) (local $l4 i32) (local $l5 i32) (local $l6 i32) (local $l7 i32) (local $l8 i32) (local $l9 i32) (local $l10 i32) (local $l11 i32) (local $l12 i32) (local $l13 i32) (local $l14 i32)
+    (local $l1 i32) (local $l2 i32) (local $l3 i32) (local $l4 i32) 
+    (local $l5 i32) (local $l6 i32) (local $l7 i32) (local $l8 i32) 
+    (local $l9 i32) (local $l10 i32) (local $l11 i32) (local $l12 i32) (local $l13 i32) (local $l14 i32)
     (global.set $g0
       (local.tee $l11
         (i32.sub

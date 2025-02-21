@@ -1,6 +1,6 @@
 `define WASM_MAGIC_VERSION 64'h000000016d736100
 
-`define WIDTH 32
+`define WIDTH 64
 
 //stack
 `define st_width `WIDTH         //here!!!!!!!

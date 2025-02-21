@@ -1,6 +1,6 @@
 // `timescale 1ns / 1ps
 `include "RTL/wasm_defines.vh"
-`include "RTL/LEB128_uint32_decode.v"
+`include "RTL/LEB128_uint_decode.v"
 
 module CtrlUnit(
         input clk,
@@ -250,7 +250,7 @@ module CtrlUnit(
      */
 
     assign LEB128_signed_decode = (code_content_running&(~(load_en|store_en|global_get|global_set)))|global_init;
-    LEB128_uint32_decode u_decode(
+    LEB128_uint_decode u_decode(
             .LEB128_in(LEB128_in),
             .uint32_out(LEB128_decode),
             .byte_cnt(LEB128_byte_cnt),

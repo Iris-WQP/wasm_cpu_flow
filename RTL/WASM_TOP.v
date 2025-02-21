@@ -142,6 +142,23 @@ module WASM_TOP(
     assign br_table_offset = (A_pop_window < constant)? A_pop_window:constant;
     assign read_specific_addr = br_table_offset+3'd2;
 
+    //MVM operands
+    reg [12:0] mvm_input_addr;
+    reg [12:0] mvm_weight_addr;
+    reg [13:0] mvm_output_addr;
+    reg mvm_working;
+    wire [`log2_S-1:0]shift;
+    wire [`log2_Height_max-1:0]height;
+    wire [`log2_Width_max-`log2_Tin-1:0]Win_div_Tin;
+    wire [`log2_Width_max-`log2_Tin-1:0]Wout_div_Tout;
+    wire [`MAX_DW*`Tin-1:0] i_feature_slice;
+    wire i_feature_vld;
+    wire [`MAX_DW*`Tin-1:0] i_weight_slice;
+    wire i_weight_vld;
+    wire [`MAX_DW*`Tout-1:0] vs_out;
+    wire vs_out_vld;
+    wire loop_height_done;
+
     //debugs
     wire [7:0] debug_reg_14 = {function_call, block_instr, loop_instr, if_instr, return_instr, control_retu_num, instr_pointer_state_out};
     wire [7:0] debug_reg_15 = control_stack_push_data[7:0];
@@ -375,21 +392,36 @@ InstrMemCtrl #
         .en((line_memory_read_en|line_memory_write_en)),
         .rdata(load_data),
         .we(line_memory_write_en&(top_state==working)&(~i_debug_ena)),
-        .wdata(line_memory_write_data)
+        .wdata(line_memory_write_data),
+
+        //MVM
+        .rdata_0(i_feature_slice),
+        .rdata_1(i_weight_slice)
     );
 
+//---------------------------VS MVM ctrl-----------------------------------------
 
-    wire [`log2_S-1:0]shift;
-    wire [`log2_Height_max-1:0]height;
-    wire [`log2_Width_max-`log2_Tin-1:0]Win_div_Tin;
-    wire [`log2_Width_max-`log2_Tin-1:0]Wout_div_Tout;
-    wire [`MAX_DW*`Tin-1:0] i_feature_slice;
-    wire i_feature_vld;
-    wire [`MAX_DW*`Tin-1:0] i_weight_slice;
-    wire i_weight_vld;
-    wire [`MAX_DW*`Tout-1:0] vs_out;
-    wire vs_out_vld;
-    wire loop_height_done;
+    always@(posedge i_clk or negedge i_rst_n)begin
+        if(~i_rst_n)begin
+            mvm_input_addr <= 13'd0;
+            mvm_output_addr <= 14'd0;
+            mvm_working <= 1'b0;
+        end else begin
+            if(mvm_start)begin
+                mvm_working <= 1'b1;
+                mvm_input_addr <= B_pop_window[12:0];
+                mvm_weight_addr <= B_pop_window[28:16];
+            end else if(loop_height_done) begin
+                mvm_working <= 1'b0;
+            end
+            if(mvm_working)begin
+                if(loop_height_done)begin
+                    mvm_input_addr <= mvm_input_addr + 1;
+                    mvm_output_addr <= mvm_output_addr + 1;
+                end
+            end
+        end
+    end
 
     assign shift = A_pop_window[28:24];
     assign height = A_pop_window[9:0];

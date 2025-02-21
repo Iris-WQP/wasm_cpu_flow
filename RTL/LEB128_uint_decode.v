@@ -1,7 +1,7 @@
 // `timescale 1ns / 1ps
 
 
-module LEB128_uint32_decode(
+module LEB128_uint_decode(
             input [35:0] LEB128_in,
             output reg [31:0] uint32_out,
             output reg [2:0] byte_cnt,
