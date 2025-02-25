@@ -131,7 +131,7 @@
 0000004: 0100 0000                                 ; WASM_BINARY_VERSION
 ; section "Type" (1)
 0000008: 01                                        ; section code
-0000009: 00                                        ; section size (guess)
+0000009: 39                                        ; FIXUP section size
 000000a: 04                                        ; num types
 ; func type 0
 000000b: 60                                        ; func
@@ -193,27 +193,24 @@
 0000040: 7f                                        ; i32
 0000041: 01                                        ; num results
 0000042: 7f                                        ; i32
-0000009: 39                                        ; FIXUP section size
 ; section "Function" (3)
 0000043: 03                                        ; section code
-0000044: 00                                        ; section size (guess)
+0000044: 05                                        ; FIXUP section size
 0000045: 04                                        ; num functions
 0000046: 00                                        ; function 0 signature index
 0000047: 01                                        ; function 1 signature index
 0000048: 02                                        ; function 2 signature index
 0000049: 03                                        ; function 3 signature index
-0000044: 05                                        ; FIXUP section size
 ; section "Memory" (5)
 000004a: 05                                        ; section code
-000004b: 00                                        ; section size (guess)
+000004b: 03                                        ; FIXUP section size
 000004c: 01                                        ; num memories
 ; memory 0
 000004d: 00                                        ; limits: flags
 000004e: 01                                        ; limits: initial
-000004b: 03                                        ; FIXUP section size
 ; section "Global" (6)
 000004f: 06                                        ; section code
-0000050: 00                                        ; section size (guess)
+0000050: 3a                                        ; FIXUP section size
 0000051: 0b                                        ; num globals
 0000052: 7f                                        ; i32
 0000053: 01                                        ; global mutability
@@ -270,10 +267,9 @@
 0000088: 41                                        ; i32.const
 0000089: 00                                        ; i32 literal
 000008a: 0b                                        ; end
-0000050: 3a                                        ; FIXUP section size
 ; section "Export" (7)
 000008b: 07                                        ; section code
-000008c: 00                                        ; section size (guess)
+000008c: 42                                        ; FIXUP section size
 000008d: 0c                                        ; num exports
 000008e: 02                                        ; string length
 000008f: 6730                                     g0  ; export name
@@ -323,18 +319,16 @@
 00000c7: 5f73 7461 7274                           _start  ; export name
 00000cd: 00                                        ; export kind
 00000ce: 00                                        ; export func index
-000008c: 42                                        ; FIXUP section size
 ; section "Start" (8)
 00000cf: 08                                        ; section code
-00000d0: 00                                        ; section size (guess)
-00000d1: 00                                        ; start func index
 00000d0: 01                                        ; FIXUP section size
+00000d1: 00                                        ; start func index
 ; section "Code" (10)
 00000d2: 0a                                        ; section code
-00000d3: 00                                        ; section size (guess)
+00000d3: 8306                                      ; FIXUP section size
 00000d4: 04                                        ; num functions
 ; function body 0
-00000d5: 00                                        ; func body size (guess)
+00000d5: 8a04                                      ; FIXUP func body size
 00000d6: 00                                        ; local decl count
 00000d7: 41                                        ; i32.const
 00000d8: 00                                        ; i32 literal
@@ -821,9 +815,8 @@
 00002de: 09                                        ; global index
 00002df: 0b                                        ; end
 ; move data: [d6, 2e0) -> [d7, 2e1)
-00000d5: 8a04                                      ; FIXUP func body size
 ; function body 1
-00002e1: 00                                        ; func body size (guess)
+00002e1: 48                                        ; FIXUP func body size
 00002e2: 00                                        ; local decl count
 00002e3: 20                                        ; local.get
 00002e4: 00                                        ; local index
@@ -896,9 +889,8 @@
 0000327: 02                                        ; alignment
 0000328: 24                                        ; store offset
 0000329: 0b                                        ; end
-00002e1: 48                                        ; FIXUP func body size
 ; function body 2
-000032a: 00                                        ; func body size (guess)
+000032a: 6e                                        ; FIXUP func body size
 000032b: 01                                        ; local decl count
 000032c: 01                                        ; local type count
 000032d: 7f                                        ; i32
@@ -1009,9 +1001,8 @@
 0000396: 00                                        ; break depth
 0000397: 0b                                        ; end
 0000398: 0b                                        ; end
-000032a: 6e                                        ; FIXUP func body size
 ; function body 3
-0000399: 00                                        ; func body size (guess)
+0000399: 3d                                        ; FIXUP func body size
 000039a: 00                                        ; local decl count
 000039b: 20                                        ; local.get
 000039c: 00                                        ; local index
@@ -1073,16 +1064,13 @@
 00003d4: 6a                                        ; i32.add
 00003d5: 6a                                        ; i32.add
 00003d6: 0b                                        ; end
-0000399: 3d                                        ; FIXUP func body size
 ; move data: [d4, 3d7) -> [d5, 3d8)
-00000d3: 8306                                      ; FIXUP section size
 ; section "name"
 00003d8: 00                                        ; section code
-00003d9: 00                                        ; section size (guess)
-00003da: 04                                        ; string length
+00003d9: 8d02                                      ; FIXUP section size00003da: 04                                        ; string length
 00003db: 6e61 6d65                                name  ; custom section name
 00003df: 01                                        ; name subsection type
-00003e0: 00                                        ; subsection size (guess)
+00003e0: 22                                        ; FIXUP subsection size
 00003e1: 04                                        ; num names
 00003e2: 00                                        ; elem index
 00003e3: 04                                        ; string length
@@ -1096,9 +1084,8 @@
 00003fc: 03                                        ; elem index
 00003fd: 05                                        ; string length
 00003fe: 766d 7631 30                             vmv10  ; elem name 3
-00003e0: 22                                        ; FIXUP subsection size
 0000403: 02                                        ; local name type
-0000404: 00                                        ; subsection size (guess)
+0000404: b101                                      ; FIXUP subsection size
 0000405: 04                                        ; num functions
 0000406: 00                                        ; function index
 0000407: 00                                        ; num locals
@@ -1241,9 +1228,8 @@
 00004b3: 02                                        ; string length
 00004b4: 3139                                     19  ; local name 19
 ; move data: [405, 4b6) -> [406, 4b7)
-0000404: b101                                      ; FIXUP subsection size
 00004b7: 07                                        ; name subsection type
-00004b8: 00                                        ; subsection size (guess)
+00004b8: 2e                                        ; FIXUP subsection size
 00004b9: 0b                                        ; num names
 00004ba: 00                                        ; elem index
 00004bb: 02                                        ; string length
@@ -1278,6 +1264,4 @@
 00004e2: 0a                                        ; elem index
 00004e3: 03                                        ; string length
 00004e4: 6731 30                                  g10  ; elem name 10
-00004b8: 2e                                        ; FIXUP subsection size
 ; move data: [3da, 4e7) -> [3db, 4e8)
-00003d9: 8d02                                      ; FIXUP section size

@@ -11,7 +11,7 @@ wasm_cycles = df['wasm cpu cycle ']
 wasmer_cycles = df['wasmer cycle']
 
 # 设置图表样式
-plt.figure(figsize=(3.5, 3.5))
+plt.figure(figsize=(3.5, 3.6))
 # plt.rcParams['font.family'] = 
 plt.rcParams['font.size'] = 9
 
@@ -24,6 +24,7 @@ plt.bar([i + bar_width for i in index], wasmer_cycles, bar_width, color='lightbl
 
 # 设置纵坐标为对数比例
 plt.yscale('log')
+plt.ylim(top=10**9)
 
 # 设置横轴标签和标题
 plt.xlabel('Operate Number')

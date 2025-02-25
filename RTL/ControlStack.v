@@ -51,7 +51,7 @@ module ControlStack(
     wire function_return;
     reg [`log_call_stack_depth:0] function_pointer_list[(`func_num_max-1):0];
     reg [`log_pa_re_num_max-1:0] function_pointer_list_pointer;
-    assign function_return = pop & (control_stack[top_after_pop][26:25] == 2'b01); //|return_instr;
+    assign function_return = pop & (control_stack[top_after_pop][27:26] == 2'b01); //|return_instr;
     assign top_function_pointer = function_pointer_list[function_pointer_list_pointer-'d1];
 
     always@(posedge clk or negedge rst_n)begin

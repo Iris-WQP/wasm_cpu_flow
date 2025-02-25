@@ -4,9 +4,9 @@
 
 //stack
 `define st_width `WIDTH         //here!!!!!!!
-`define st_depth 64
-`define st_depth_mius_1 63
-`define st_log2_depth 6
+`define st_depth 128
+`define st_depth_mius_1 127
+`define st_log2_depth 7
 `define imem_width 8
 
 //local/global memory; bram
@@ -39,7 +39,7 @@
 
 //call stack
 //frame_type+retu_num+st_tag+instr_tag        
-`define call_stack_width 27  //(3+`st_log2_depth+`instr_log2_bram_depth) 3+6+18=27
+`define call_stack_width 28  //(3+`st_log2_depth+`instr_log2_bram_depth) 3+7+18=28
 `define call_stack_depth 32
 `define log_call_stack_depth 5
 
