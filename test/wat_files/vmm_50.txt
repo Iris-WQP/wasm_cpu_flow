@@ -11,7 +11,7 @@
   (global $g7 (export "g7")(mut i32) (i32.const 0))
   (global $g8 (export "g8")(mut i32) (i32.const 0))
   (global $g9 (export "g9")(mut i32) (i32.const 0))
-  (func $main (export "main")
+  (func $main (export "_start")
     (i32.const 0)(global.get $g0)(global.get $g1)(global.get $g2) (i32.const 1) (i32.const 1)
                   (i32.const 1)(i32.const 1)(i32.const 1)(i32.const 1)(i32.const 1)(call $store_vec10)
     (i32.const 40)(i32.const 1)(i32.const 1)(i32.const 1)(i32.const 1)(i32.const 1)

@@ -100,7 +100,7 @@ def revise_line_number(file_path):
 
 # main function
 if __name__ == '__main__':
-    revise_line_number('test/wat_files/vmm_50.txt')
-    distract_instrs('test/wat_files/vmm_50.txt', 'wasm_benchmark_file/temp.txt')
-    rearrange_file('wasm_benchmark_file/temp.txt', 'test/hex_files/vmm_50_hex.txt')
+    revise_line_number('test/wat_files/vmm_100.txt')
+    distract_instrs('test/wat_files/vmm_100.txt', 'wasm_benchmark_file/temp.txt')
+    rearrange_file('wasm_benchmark_file/temp.txt', 'test/hex_files/vmm_100_hex.txt')
     

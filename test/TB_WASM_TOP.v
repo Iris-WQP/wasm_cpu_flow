@@ -105,10 +105,10 @@ module TB_WASM_TOP;
         // $readmemh("/home/wu/wasm_cpu/wasm_cpu_flow/test/hex_files/vmv3_hex.txt", bram);
         // $readmemh("/home/wu/wasm_cpu/wasm_cpu_flow/test/hex_files/vmv10_hex.txt", bram);
         // $readmemh("/home/wu/wasm_cpu/wasm_cpu_flow/test/hex_files/vmm10_s_hex.txt", bram);
-        // $readmemh("/home/wu/wasm_cpu/wasm_cpu_flow/test/hex_files/vmm_20_hex.txt", bram);
+        $readmemh("/home/wu/wasm_cpu/wasm_cpu_flow/test/hex_files/vmm_20_hex.txt", bram);
         // $readmemh("/home/wu/wasm_cpu/wasm_cpu_flow/test/hex_files/vmm_30_hex.txt", bram);
         // $readmemh("/home/wu/wasm_cpu/wasm_cpu_flow/test/hex_files/vmm_40_hex.txt", bram);
-        $readmemh("/home/wu/wasm_cpu/wasm_cpu_flow/test/hex_files/vmm_50_hex.txt", bram);
+        // $readmemh("/home/wu/wasm_cpu/wasm_cpu_flow/test/hex_files/vmm_100_hex.txt", bram);
         // $readmemh("return_hex.txt", bram);
         $display("Test data loaded: %0h %0h %0h %0h", bram[0], bram[1], bram[2], bram[3]);
     end
@@ -240,7 +240,7 @@ module TB_WASM_TOP;
         end
     end        
     initial begin 
-        #100000
+        #1000000000
         $finish;
     end
             
